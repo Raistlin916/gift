@@ -56,12 +56,13 @@ Input.prototype = {
 var objs = [];
 (function () {
   var heart;
-  for(var i = 0; i < 10; i++) {
+  for(var i = 0; i < 50; i++) {
      heart = new Heart({
-      x: 100 + i,
-      y: 500 + i,
-      vx: 100,
-      vy: -300,
+      x: 300,
+      y: 300, 
+      vx: rand(-200, 200),
+      vy: rand(-100, -800),
+      color: ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'][rand(0, 5)]
     });   
     objs.push(heart);
   } 
@@ -97,7 +98,7 @@ function update (t) {
   });
 }
 
-setTimeout(start, 3000);
+setTimeout(start, 1000);
 
 function extend( defaults, options ) {
     var extended = {};
@@ -114,3 +115,7 @@ function extend( defaults, options ) {
     }
     return extended;
 };
+
+function rand(from, to) {
+  return ~~(from + Math.random() * (to - from));
+}
