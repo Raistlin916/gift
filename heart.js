@@ -9,18 +9,18 @@ function Heart (option) {
   this.pt = extend({x:0, y:0}, {x: option.x, y: option.y}); 
   this.speed = extend({x: 0, y: 0}, {x: option.vx, y: option.vy});
   this.color = option.color || 'red';
+  this.opacity = option.opacity || 1;
 }
 Heart.prototype = {
   update: function (t) {
     this.pt.x += t * this.speed.x;
     this.pt.y += t * this.speed.y;
-    
+    this.opacity -= t * 0.1;
     this.speed.y += t * 300;
   },
   draw: function (elapse) {
     ctx.save();
     ctx.beginPath();
-    ctx.fillStyle = this.color;
     ctx.translate(this.pt.x, this.pt.y);
     
     var start = null;
@@ -36,8 +36,11 @@ Heart.prototype = {
       }
       ctx.lineTo(x, y);
     } 
-
     
+    
+    ctx.fillStyle = this.color;
+    ctx.globalAlpha = this.opacity;
+    console.log(ctx.globalAlpha);
     ctx.closePath();
     ctx.fill();
     ctx.restore();
@@ -119,3 +122,5 @@ function extend( defaults, options ) {
 function rand(from, to) {
   return ~~(from + Math.random() * (to - from));
 }
+
+
