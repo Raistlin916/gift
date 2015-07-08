@@ -15,7 +15,12 @@ Heart.prototype = {
   update: function (t) {
     this.pt.x += t * this.speed.x;
     this.pt.y += t * this.speed.y;
-    this.opacity -= t * 0.1;
+    
+    this.opacity -= t * 1;
+    if (this.opacity < 0) {
+      this.opacity = 0;
+    }
+    
     this.speed.y += t * 300;
   },
   draw: function (elapse) {
@@ -40,7 +45,6 @@ Heart.prototype = {
     
     ctx.fillStyle = this.color;
     ctx.globalAlpha = this.opacity;
-    console.log(ctx.globalAlpha);
     ctx.closePath();
     ctx.fill();
     ctx.restore();
