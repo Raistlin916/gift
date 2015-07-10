@@ -3,6 +3,8 @@ canvas.height = 1000;
 canvas.width = 1000;
 canvas.style.border = '1px solid #e5e5e5';
 
+var colors = ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'];
+
 var ctx = canvas.getContext('2d');
 
 function Heart (option) {
@@ -26,28 +28,12 @@ Heart.prototype = {
   },
   draw: function (elapse) {
     ctx.save();
-    ctx.beginPath();
     ctx.translate(this.pt.x, this.pt.y);
     
-    var start = null;
-    for(var t=0;t<10;t+=0.1){
-      var x = 16*(Math.pow(Math.sin(t),3)); 
-      var y = -(13*Math.cos(t))+(5*Math.cos(2*t))+(2*Math.cos(3*t))+(Math.cos(4*t));
-      x *= 1;
-      y *= 1;
-      if(!start){
-        start = {x:x, y:y};
-        ctx.moveTo(x, y);
-        continue;
-      }
-      ctx.lineTo(x, y);
-    } 
     
-    
-    ctx.fillStyle = this.color;
     ctx.globalAlpha = this.opacity;
-    ctx.closePath();
-    ctx.fill();
+    ctx.drawImage(heartCacheMap[this.color], 0, 0);
+    
     ctx.restore();
     
   },
@@ -57,13 +43,40 @@ Heart.prototype = {
   
 }
 
-
-function Input() {
-  
+function createCanvasCache(ctxProcess) {
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext('2d');
+  ctxProcess(ctx); 
+  return canvas;
 }
-Input.prototype = {
+var heartCacheMap = {};
+colors.forEach(function (c) {
+  var canvas = createCanvasCache(function (ctx) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    // for(var t=0;t<10;t+=0.1){
+    //   var x = 16*(Math.pow(Math.sin(t),3)); 
+    //   var y = -(13*Math.cos(t))+(5*Math.cos(2*t))+(2*Math.cos(3*t))+(Math.cos(4*t));
+    //   x *= 1;
+    //   y *= 1;
+    //   ctx.lineTo(x, y);
+    // } 
+    
+    ctx.lineTo(10, 0);
+    ctx.lineTo(10, 10);
+    ctx.lineTo(0, 10);
+    
+    ctx.fillStyle = c;
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  });
   
-};
+  heartCacheMap[c] = canvas;
+}); 
+
+
 
 var objs = [];
 function createHearts(x, y) {
@@ -74,7 +87,7 @@ function createHearts(x, y) {
       y: y, 
       vx: rand(-300, 300),
       vy: rand(-100, -600),
-      color: ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'][rand(0, 5)],
+      color: colors[rand(0, 5)],
       opacity: rand(6, 10)/10
     });   
     objs.push(heart);
