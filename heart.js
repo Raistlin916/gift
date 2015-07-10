@@ -16,14 +16,16 @@ function Heart (option) {
 }
 Heart.prototype = {
   update: function (t) {
-    this.pt.x += t * this.speed.x;
-    this.pt.y += t * this.speed.y;
-    
     this.opacity -= t * .5;
+
     if (this.opacity < 0) {
       this.opacity = 0;
       this.destroy();
+      return;
     }
+
+    this.pt.x += t * this.speed.x;
+    this.pt.y += t * this.speed.y;
     
     this.speed.y += t * 600;
   },
@@ -39,7 +41,7 @@ Heart.prototype = {
     
   },
   destroy: function () {
-    objs.splice(objs.indexOf(this), 1);
+    this.isDead = true;
   }
   
 }
@@ -81,7 +83,7 @@ colors.forEach(function (c) {
 var objs = [];
 function createHearts(x, y) {
   var heart;
-  for(var i = 0; i < 50; i++) {
+  for(var i = 0; i < 100; i++) {
      heart = new Heart({
       x: x,
       y: y, 
@@ -108,6 +110,7 @@ function start() {
     last = now;
     update(elapse);
     draw();
+    recycle();
     window.requestAnimationFrame(round);
   };
   round();
@@ -124,6 +127,14 @@ function draw () {
 function update (t) {
   objs.forEach(function(item) {
      item.update(t); 
+  });
+}
+
+function recycle () {
+  objs.forEach(function (item) {
+    if(item.isDead){
+      objs.splice(objs.indexOf(item), 1);
+    }
   });
 }
 
