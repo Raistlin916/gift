@@ -1,3 +1,4 @@
+'use strict';
 var canvas = document.getElementsByTagName('canvas')[0];
 canvas.height = 1000;
 canvas.width = 1000;
@@ -32,7 +33,7 @@ Heart.prototype = {
     
     
     ctx.globalAlpha = this.opacity;
-    ctx.drawImage(heartCacheMap[this.color], 0, 0);
+    ctx.drawImage(heartCacheMap[this.color], -30, -30);
     
     ctx.restore();
     
@@ -46,31 +47,30 @@ Heart.prototype = {
 function createCanvasCache(ctxProcess) {
   var canvas = document.createElement('canvas');
   var ctx = canvas.getContext('2d');
-  ctxProcess(ctx); 
+  ctxProcess(ctx, canvas); 
   return canvas;
 }
 var heartCacheMap = {};
 colors.forEach(function (c) {
-  var canvas = createCanvasCache(function (ctx) {
-    ctx.save();
+  var canvas = createCanvasCache(function (ctx, canvas) {
+    canvas.width = 60;
+    canvas.height = 60;
     ctx.beginPath();
+    ctx.translate(30, 30);
     ctx.moveTo(0, 0);
-    // for(var t=0;t<10;t+=0.1){
-    //   var x = 16*(Math.pow(Math.sin(t),3)); 
-    //   var y = -(13*Math.cos(t))+(5*Math.cos(2*t))+(2*Math.cos(3*t))+(Math.cos(4*t));
-    //   x *= 1;
-    //   y *= 1;
-    //   ctx.lineTo(x, y);
-    // } 
-    
-    ctx.lineTo(10, 0);
-    ctx.lineTo(10, 10);
-    ctx.lineTo(0, 10);
-    
+
+    var x, y;
+    for(var t=0;t<10;t+=.1){
+      x = 16*(Math.pow(Math.sin(t),3)); 
+      y = -(13*Math.cos(t))+(5*Math.cos(2*t))+(2*Math.cos(3*t))+(Math.cos(4*t));
+      x *= 1;
+      y *= 1;
+      ctx.lineTo(x, y);
+    } 
+
     ctx.fillStyle = c;
     ctx.closePath();
     ctx.fill();
-    ctx.restore();
   });
   
   heartCacheMap[c] = canvas;
