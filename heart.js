@@ -61,14 +61,9 @@ colors.forEach(function (c) {
     ctx.translate(30, 30);
     ctx.moveTo(0, 0);
 
-    var x, y;
-    for(var t=0;t<10;t+=.1){
-      x = 16*(Math.pow(Math.sin(t),3)); 
-      y = -(13*Math.cos(t))+(5*Math.cos(2*t))+(2*Math.cos(3*t))+(Math.cos(4*t));
-      x *= 1;
-      y *= 1;
+    getHeartPath(function (x, y) {
       ctx.lineTo(x, y);
-    } 
+    });
 
     ctx.fillStyle = c;
     ctx.closePath();
@@ -78,12 +73,21 @@ colors.forEach(function (c) {
   heartCacheMap[c] = canvas;
 }); 
 
-
+function getHeartPath(cb) {
+  var x, y;
+  for(var t=0;t<6.6;t+=.1){
+    x = 16*(Math.pow(Math.sin(t),3)); 
+    y = -(13*Math.cos(t))+(5*Math.cos(2*t))+(2*Math.cos(3*t))+(Math.cos(4*t));
+    x *= 1;
+    y *= 1;
+    cb(x, y);
+  } 
+}
 
 var objs = [];
 function createHearts(x, y) {
   var heart;
-  for(var i = 0; i < 100; i++) {
+  for(var i = 0; i<100; i++) {
      heart = new Heart({
       x: x,
       y: y, 
@@ -95,8 +99,38 @@ function createHearts(x, y) {
     objs.push(heart);
   } 
 };
+
+function createHeartsByHeart(dx, dy) {
+  var heart;
+  var n = 0;
+  getHeartPath(function (x, y) {
+    n ++;
+    if(n%2 != 0){
+      return;
+    }
+
+    x *= 10;
+    y *= 10;
+    
+    (function () {
+      setTimeout(function(){
+        heart = new Heart({
+          x: dx + x,
+          y: dy + y, 
+          vx: 0,
+          vy: 0,
+          color: colors[rand(0, 5)],
+          opacity: rand(6, 10)/10
+        });
+        objs.push(heart);      
+      }, n * 10);
+    })(x, y);
+    
+  });
+};
+
 canvas.onclick = function (e) {
-  createHearts(e.offsetX, e.offsetY); 
+  createHeartsByHeart(e.offsetX, e.offsetY); 
 };
 
 
