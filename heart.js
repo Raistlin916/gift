@@ -16,12 +16,13 @@ Heart.prototype = {
     this.pt.x += t * this.speed.x;
     this.pt.y += t * this.speed.y;
     
-    this.opacity -= t * 1;
+    this.opacity -= t * .5;
     if (this.opacity < 0) {
       this.opacity = 0;
+      this.destroy();
     }
     
-    this.speed.y += t * 300;
+    this.speed.y += t * 600;
   },
   draw: function (elapse) {
     ctx.save();
@@ -49,7 +50,11 @@ Heart.prototype = {
     ctx.fill();
     ctx.restore();
     
+  },
+  destroy: function () {
+    objs.splice(objs.indexOf(this), 1);
   }
+  
 }
 
 
@@ -61,19 +66,23 @@ Input.prototype = {
 };
 
 var objs = [];
-(function () {
+function createHearts(x, y) {
   var heart;
   for(var i = 0; i < 50; i++) {
      heart = new Heart({
-      x: 300,
-      y: 300, 
-      vx: rand(-200, 200),
-      vy: rand(-100, -800),
-      color: ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'][rand(0, 5)]
+      x: x,
+      y: y, 
+      vx: rand(-300, 300),
+      vy: rand(-100, -600),
+      color: ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'][rand(0, 5)],
+      opacity: rand(6, 10)/10
     });   
     objs.push(heart);
   } 
-})();
+};
+canvas.onclick = function (e) {
+  createHearts(e.offsetX, e.offsetY); 
+};
 
 
 
@@ -105,7 +114,7 @@ function update (t) {
   });
 }
 
-setTimeout(start, 1000);
+start();
 
 function extend( defaults, options ) {
     var extended = {};
