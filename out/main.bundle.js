@@ -216,7 +216,7 @@
 /* 1 */
 /***/ function(module, exports) {
 
-	const utils = {
+	let utils = {
 	    rand: (from, to) => {
 	        return ~ ~(from + Math.random() * (to - from));
 	    }
