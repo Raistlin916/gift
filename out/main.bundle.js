@@ -44,74 +44,87 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
-	//import {rand} from './utils';
+	'use strict';
 
-	;
-	let rand = __webpack_require__(1).rand;
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	const canvas = document.getElementsByTagName('canvas')[0];
+	var _utils = __webpack_require__(1);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var canvas = document.getElementsByTagName('canvas')[0];
 	canvas.height = 1000;
 	canvas.width = 1000;
 	canvas.style.border = '1px solid #e5e5e5';
 
-	const colors = ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'];
-	const ctx = canvas.getContext('2d');
+	var colors = ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'];
+	var ctx = canvas.getContext('2d');
 
-	class Heart {
-	  constructor(option) {
+	var Heart = (function () {
+	  function Heart(option) {
+	    _classCallCheck(this, Heart);
+
 	    this.pt = Object.assign({ x: 0, y: 0 }, { x: option.x, y: option.y });
 	    this.speed = Object.assign({ x: 0, y: 0 }, { x: option.vx, y: option.vy });
 	    this.color = option.color || 'red';
 	    this.opacity = option.opacity || 1;
 	  }
 
-	  update(t) {
-	    this.opacity -= t * .5;
+	  _createClass(Heart, [{
+	    key: 'update',
+	    value: function update(t) {
+	      this.opacity -= t * .5;
 
-	    if (this.opacity < 0) {
-	      this.opacity = 0;
-	      this.destroy();
-	      return;
+	      if (this.opacity < 0) {
+	        this.opacity = 0;
+	        this.destroy();
+	        return;
+	      }
+
+	      this.pt.x += t * this.speed.x;
+	      this.pt.y += t * this.speed.y;
+
+	      this.speed.y += t * 600;
 	    }
+	  }, {
+	    key: 'draw',
+	    value: function draw(elapse) {
+	      ctx.save();
+	      ctx.translate(this.pt.x, this.pt.y);
 
-	    this.pt.x += t * this.speed.x;
-	    this.pt.y += t * this.speed.y;
+	      ctx.globalAlpha = this.opacity;
+	      ctx.drawImage(heartCacheMap[this.color], -30, -30);
 
-	    this.speed.y += t * 600;
-	  }
+	      ctx.restore();
+	    }
+	  }, {
+	    key: 'destroy',
+	    value: function destroy() {
+	      this.isDead = true;
+	    }
+	  }]);
 
-	  draw(elapse) {
-	    ctx.save();
-	    ctx.translate(this.pt.x, this.pt.y);
-
-	    ctx.globalAlpha = this.opacity;
-	    ctx.drawImage(heartCacheMap[this.color], -30, -30);
-
-	    ctx.restore();
-	  }
-
-	  destroy() {
-	    this.isDead = true;
-	  }
-	}
+	  return Heart;
+	})();
 
 	function createCanvasCache(ctxProcess) {
-	  const canvas = document.createElement('canvas');
-	  const ctx = canvas.getContext('2d');
+	  var canvas = document.createElement('canvas');
+	  var ctx = canvas.getContext('2d');
 	  ctxProcess(ctx, canvas);
 	  return canvas;
 	}
-	let heartCacheMap = {};
-	colors.forEach(c => {
-	  let canvas = createCanvasCache((ctx, canvas) => {
+	var heartCacheMap = {};
+	colors.forEach(function (c) {
+	  var canvas = createCanvasCache(function (ctx, canvas) {
 	    canvas.width = 60;
 	    canvas.height = 60;
 	    ctx.beginPath();
 	    ctx.translate(30, 30);
 	    ctx.moveTo(0, 0);
 
-	    getHeartPath((x, y) => ctx.lineTo(x, y));
+	    getHeartPath(function (x, y) {
+	      return ctx.lineTo(x, y);
+	    });
 
 	    ctx.fillStyle = c;
 	    ctx.closePath();
@@ -122,8 +135,9 @@
 	});
 
 	function getHeartPath(cb) {
-	  let x, y;
-	  for (let t = 0; t < 6.6; t += .1) {
+	  var x = undefined,
+	      y = undefined;
+	  for (var t = 0; t < 6.6; t += .1) {
 	    x = 16 * Math.pow(Math.sin(t), 3);
 	    y = -(13 * Math.cos(t)) + 5 * Math.cos(2 * t) + 2 * Math.cos(3 * t) + Math.cos(4 * t);
 	    x *= 1;
@@ -132,25 +146,25 @@
 	  }
 	}
 
-	let objs = [];
+	var objs = [];
 	function createHearts(x, y) {
-	  let heart;
-	  for (let i = 0; i < 100; i++) {
+	  var heart = undefined;
+	  for (var i = 0; i < 100; i++) {
 	    heart = new Heart({
 	      x: x,
 	      y: y,
-	      vx: rand(-300, 300),
-	      vy: rand(-100, -600),
-	      color: colors[rand(0, 5)],
-	      opacity: rand(6, 10) / 10
+	      vx: (0, _utils.rand)(-300, 300),
+	      vy: (0, _utils.rand)(-100, -600),
+	      color: colors[(0, _utils.rand)(0, 5)],
+	      opacity: (0, _utils.rand)(6, 9) / 10
 	    });
 	    objs.push(heart);
 	  }
 	};
 
 	function createHeartsByHeart(dx, dy) {
-	  let heart;
-	  let n = 0;
+	  var heart = undefined;
+	  var n = 0;
 	  getHeartPath(function (x, y) {
 	    n++;
 	    if (n % 2 != 0) {
@@ -167,8 +181,8 @@
 	          y: dy + y,
 	          vx: 0,
 	          vy: 0,
-	          color: colors[rand(0, 5)],
-	          opacity: rand(6, 10) / 10
+	          color: colors[(0, _utils.rand)(0, 5)],
+	          opacity: (0, _utils.rand)(6, 10) / 10
 	        });
 	        objs.push(heart);
 	      }, n * 10);
@@ -176,14 +190,16 @@
 	  });
 	};
 
-	canvas.onclick = e => createHeartsByHeart(e.offsetX, e.offsetY);
+	canvas.onclick = function (e) {
+	  return createHeartsByHeart(e.offsetX, e.offsetY);
+	};
 
 	function start() {
-	  let last = new Date();
+	  var last = new Date();
 	  function round() {
-	    const now = new Date();
+	    var now = new Date();
 
-	    let elapse = (now - last) / 1000;
+	    var elapse = (now - last) / 1000;
 	    last = now;
 	    update(elapse);
 	    draw();
@@ -195,15 +211,19 @@
 
 	function draw() {
 	  ctx.clearRect(0, 0, canvas.width, canvas.height);
-	  objs.forEach(item => item.draw());
+	  objs.forEach(function (item) {
+	    return item.draw();
+	  });
 	}
 
 	function update(t) {
-	  objs.forEach(item => item.update(t));
+	  objs.forEach(function (item) {
+	    return item.update(t);
+	  });
 	}
 
 	function recycle() {
-	  objs.forEach(item => {
+	  objs.forEach(function (item) {
 	    if (item.isDead) {
 	      objs.splice(objs.indexOf(item), 1);
 	    }
@@ -216,15 +236,14 @@
 /* 1 */
 /***/ function(module, exports) {
 
-	let utils = {
-	    rand: (from, to) => {
-	        return ~ ~(from + Math.random() * (to - from));
-	    }
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var rand = exports.rand = function rand(from, to) {
+	    return ~ ~(from + Math.random() * (to - from));
 	};
-
-	//export default utils;
-
-	module.exports = utils;
 
 /***/ }
 /******/ ]);

@@ -1,7 +1,4 @@
-'use strict';
-//import {rand} from './utils';
-
-let rand = require('./utils').rand;
+import {rand} from './utils';
 
 const canvas = document.getElementsByTagName('canvas')[0];
 canvas.height = 1000;
@@ -97,7 +94,7 @@ function createHearts(x, y) {
       vx: rand(-300, 300),
       vy: rand(-100, -600),
       color: colors[rand(0, 5)],
-      opacity: rand(6, 10)/10
+      opacity: rand(6, 9)/10
     });   
     objs.push(heart);
   } 

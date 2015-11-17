@@ -1,9 +1,3 @@
-let utils = {
-    rand: (from, to) => {
-        return ~~(from + Math.random() * (to - from));
-    }
+export let rand =  (from, to) => {
+    return ~~(from + Math.random() * (to - from));
 }
-
-//export default utils;
-
-module.exports = utils;
