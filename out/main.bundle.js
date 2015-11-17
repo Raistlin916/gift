@@ -42,17 +42,21 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	'use strict'
+	//import {rand} from './utils';
 
-	let canvas = document.getElementsByTagName('canvas')[0];
+	;
+	let rand = __webpack_require__(1).rand;
+
+	const canvas = document.getElementsByTagName('canvas')[0];
 	canvas.height = 1000;
 	canvas.width = 1000;
 	canvas.style.border = '1px solid #e5e5e5';
 
-	let colors = ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'];
-	let ctx = canvas.getContext('2d');
+	const colors = ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'];
+	const ctx = canvas.getContext('2d');
 
 	class Heart {
 	  constructor(option) {
@@ -93,23 +97,21 @@
 	}
 
 	function createCanvasCache(ctxProcess) {
-	  let canvas = document.createElement('canvas');
-	  let ctx = canvas.getContext('2d');
+	  const canvas = document.createElement('canvas');
+	  const ctx = canvas.getContext('2d');
 	  ctxProcess(ctx, canvas);
 	  return canvas;
 	}
 	let heartCacheMap = {};
-	colors.forEach(function (c) {
-	  let canvas = createCanvasCache(function (ctx, canvas) {
+	colors.forEach(c => {
+	  let canvas = createCanvasCache((ctx, canvas) => {
 	    canvas.width = 60;
 	    canvas.height = 60;
 	    ctx.beginPath();
 	    ctx.translate(30, 30);
 	    ctx.moveTo(0, 0);
 
-	    getHeartPath(function (x, y) {
-	      ctx.lineTo(x, y);
-	    });
+	    getHeartPath((x, y) => ctx.lineTo(x, y));
 
 	    ctx.fillStyle = c;
 	    ctx.closePath();
@@ -174,14 +176,12 @@
 	  });
 	};
 
-	canvas.onclick = function (e) {
-	  createHeartsByHeart(e.offsetX, e.offsetY);
-	};
+	canvas.onclick = e => createHeartsByHeart(e.offsetX, e.offsetY);
 
 	function start() {
 	  let last = new Date();
 	  function round() {
-	    let now = new Date();
+	    const now = new Date();
 
 	    let elapse = (now - last) / 1000;
 	    last = now;
@@ -212,9 +212,19 @@
 
 	start();
 
-	function rand(from, to) {
-	  return ~ ~(from + Math.random() * (to - from));
-	}
+/***/ },
+/* 1 */
+/***/ function(module, exports) {
+
+	const utils = {
+	    rand: (from, to) => {
+	        return ~ ~(from + Math.random() * (to - from));
+	    }
+	};
+
+	//export default utils;
+
+	module.exports = utils;
 
 /***/ }
 /******/ ]);
