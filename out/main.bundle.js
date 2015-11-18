@@ -61,7 +61,9 @@
 	var ctx = canvas.getContext('2d');
 
 	var Heart = (function () {
-	  function Heart(option) {
+	  function Heart() {
+	    var option = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
 	    _classCallCheck(this, Heart);
 
 	    this.pt = Object.assign({ x: 0, y: 0 }, { x: option.x, y: option.y });
@@ -140,8 +142,6 @@
 	  for (var t = 0; t < 6.6; t += .1) {
 	    x = 16 * Math.pow(Math.sin(t), 3);
 	    y = -(13 * Math.cos(t)) + 5 * Math.cos(2 * t) + 2 * Math.cos(3 * t) + Math.cos(4 * t);
-	    x *= 1;
-	    y *= 1;
 	    cb(x, y);
 	  }
 	}
@@ -191,7 +191,7 @@
 	};
 
 	canvas.onclick = function (e) {
-	  return createHeartsByHeart(e.offsetX, e.offsetY);
+	  return createHearts(e.offsetX, e.offsetY);
 	};
 
 	function start() {

@@ -9,7 +9,7 @@ const colors = ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'];
 const ctx = canvas.getContext('2d');
 
 class Heart {
-  constructor (option) {
+  constructor (option={}) {
     this.pt = Object.assign({x:0, y:0}, {x: option.x, y: option.y}); 
     this.speed = Object.assign({x: 0, y: 0}, {x: option.vx, y: option.vy});
     this.color = option.color || 'red';
@@ -78,8 +78,6 @@ function getHeartPath(cb) {
   for(let t=0;t<6.6;t+=.1){
     x = 16*(Math.pow(Math.sin(t),3)); 
     y = -(13*Math.cos(t))+(5*Math.cos(2*t))+(2*Math.cos(3*t))+(Math.cos(4*t));
-    x *= 1;
-    y *= 1;
     cb(x, y);
   } 
 }
@@ -129,7 +127,7 @@ function createHeartsByHeart(dx, dy) {
   });
 };
 
-canvas.onclick = e => createHeartsByHeart(e.offsetX, e.offsetY);
+canvas.onclick = e => createHearts(e.offsetX, e.offsetY);
 
 
 
