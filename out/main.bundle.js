@@ -46,74 +46,28 @@
 
 	'use strict';
 
-	var _utils = __webpack_require__(1);
+	var _heart = __webpack_require__(1);
 
-	var _heart = __webpack_require__(2);
+	var _cycle = __webpack_require__(3);
+
+	var _cycle2 = _interopRequireDefault(_cycle);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var canvas = document.getElementsByTagName('canvas')[0];
 	canvas.height = 1000;
 	canvas.width = 1000;
 	canvas.style.border = '1px solid #e5e5e5';
-	var ctx = canvas.getContext('2d');
 
-	var objs = [];
+	var cycle = new _cycle2.default(canvas);
+	cycle.start();
+
 	canvas.onclick = function (e) {
-	  return (0, _heart.createHeartsByHeart)(objs, e.offsetX, e.offsetY);
+	  return (0, _heart.createHeartsByHeart)(cycle.getObjs(), e.offsetX, e.offsetY);
 	};
-
-	function start() {
-	  var last = new Date();
-	  function round() {
-	    var now = new Date();
-
-	    var elapse = (now - last) / 1000;
-	    last = now;
-	    update(elapse);
-	    draw();
-	    recycle();
-	    window.requestAnimationFrame(round);
-	  };
-	  round();
-	};
-
-	function draw() {
-	  ctx.clearRect(0, 0, canvas.width, canvas.height);
-	  objs.forEach(function (item) {
-	    return item.draw(ctx);
-	  });
-	}
-
-	function update(t) {
-	  objs.forEach(function (item) {
-	    return item.update(t);
-	  });
-	}
-
-	function recycle() {
-	  objs.forEach(function (item) {
-	    if (item.isDead) {
-	      objs.splice(objs.indexOf(item), 1);
-	    }
-	  });
-	}
-
-	start();
 
 /***/ },
 /* 1 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var rand = exports.rand = function rand(from, to) {
-	    return ~ ~(from + Math.random() * (to - from));
-	};
-
-/***/ },
-/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -125,7 +79,7 @@
 	});
 	exports.createHeartsByHeart = exports.createHearts = undefined;
 
-	var _utils = __webpack_require__(1);
+	var _utils = __webpack_require__(2);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -259,6 +213,100 @@
 	    })(x, y);
 	  });
 	};
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var rand = exports.rand = function rand(from, to) {
+	    return ~ ~(from + Math.random() * (to - from));
+	};
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Cycle = (function () {
+	    function Cycle(canvas) {
+	        _classCallCheck(this, Cycle);
+
+	        this.canvas = canvas;
+	        this.ctx = canvas.getContext('2d');
+	        this.objs = [];
+	    }
+
+	    _createClass(Cycle, [{
+	        key: 'start',
+	        value: function start() {
+	            var _this = this;
+
+	            var last = new Date();
+	            var round = function round() {
+	                var now = new Date();
+
+	                var elapse = (now - last) / 1000;
+	                last = now;
+	                _this.update(elapse);
+	                _this.draw();
+	                window.requestAnimationFrame(round);
+	            };
+	            round();
+	        }
+	    }, {
+	        key: 'draw',
+	        value: function draw() {
+	            var _this2 = this;
+
+	            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	            this.objs.forEach(function (item) {
+	                return item.draw(_this2.ctx);
+	            });
+	        }
+	    }, {
+	        key: 'update',
+	        value: function update(elapse) {
+	            this.objs.forEach(function (item) {
+	                return item.update(elapse);
+	            });
+	            this.recycle();
+	        }
+	    }, {
+	        key: 'recycle',
+	        value: function recycle() {
+	            var _this3 = this;
+
+	            this.objs.forEach(function (item) {
+	                if (item.isDead) {
+	                    _this3.objs.splice(_this3.objs.indexOf(item), 1);
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'getObjs',
+	        value: function getObjs() {
+	            return this.objs;
+	        }
+	    }]);
+
+	    return Cycle;
+	})();
+
+	exports.default = Cycle;
 
 /***/ }
 /******/ ]);
