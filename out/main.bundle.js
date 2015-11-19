@@ -46,19 +46,88 @@
 
 	'use strict';
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
 	var _utils = __webpack_require__(1);
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	var _heart = __webpack_require__(2);
 
 	var canvas = document.getElementsByTagName('canvas')[0];
 	canvas.height = 1000;
 	canvas.width = 1000;
 	canvas.style.border = '1px solid #e5e5e5';
-
-	var colors = ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'];
 	var ctx = canvas.getContext('2d');
+
+	var objs = [];
+	canvas.onclick = function (e) {
+	  return (0, _heart.createHeartsByHeart)(objs, e.offsetX, e.offsetY);
+	};
+
+	function start() {
+	  var last = new Date();
+	  function round() {
+	    var now = new Date();
+
+	    var elapse = (now - last) / 1000;
+	    last = now;
+	    update(elapse);
+	    draw();
+	    recycle();
+	    window.requestAnimationFrame(round);
+	  };
+	  round();
+	};
+
+	function draw() {
+	  ctx.clearRect(0, 0, canvas.width, canvas.height);
+	  objs.forEach(function (item) {
+	    return item.draw(ctx);
+	  });
+	}
+
+	function update(t) {
+	  objs.forEach(function (item) {
+	    return item.update(t);
+	  });
+	}
+
+	function recycle() {
+	  objs.forEach(function (item) {
+	    if (item.isDead) {
+	      objs.splice(objs.indexOf(item), 1);
+	    }
+	  });
+	}
+
+	start();
+
+/***/ },
+/* 1 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var rand = exports.rand = function rand(from, to) {
+	    return ~ ~(from + Math.random() * (to - from));
+	};
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.createHeartsByHeart = exports.createHearts = undefined;
+
+	var _utils = __webpack_require__(1);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Heart = (function () {
 	  function Heart() {
@@ -90,7 +159,7 @@
 	    }
 	  }, {
 	    key: 'draw',
-	    value: function draw(elapse) {
+	    value: function draw(ctx) {
 	      ctx.save();
 	      ctx.translate(this.pt.x, this.pt.y);
 
@@ -108,6 +177,8 @@
 
 	  return Heart;
 	})();
+
+	var colors = ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'];
 
 	function createCanvasCache(ctxProcess) {
 	  var canvas = document.createElement('canvas');
@@ -146,8 +217,7 @@
 	  }
 	}
 
-	var objs = [];
-	function createHearts(x, y) {
+	var createHearts = exports.createHearts = function createHearts(objs, x, y) {
 	  var heart = undefined;
 	  for (var i = 0; i < 100; i++) {
 	    heart = new Heart({
@@ -162,7 +232,7 @@
 	  }
 	};
 
-	function createHeartsByHeart(dx, dy) {
+	var createHeartsByHeart = exports.createHeartsByHeart = function createHeartsByHeart(objs, dx, dy) {
 	  var heart = undefined;
 	  var n = 0;
 	  getHeartPath(function (x, y) {
@@ -188,61 +258,6 @@
 	      }, n * 10);
 	    })(x, y);
 	  });
-	};
-
-	canvas.onclick = function (e) {
-	  return createHearts(e.offsetX, e.offsetY);
-	};
-
-	function start() {
-	  var last = new Date();
-	  function round() {
-	    var now = new Date();
-
-	    var elapse = (now - last) / 1000;
-	    last = now;
-	    update(elapse);
-	    draw();
-	    recycle();
-	    window.requestAnimationFrame(round);
-	  };
-	  round();
-	};
-
-	function draw() {
-	  ctx.clearRect(0, 0, canvas.width, canvas.height);
-	  objs.forEach(function (item) {
-	    return item.draw();
-	  });
-	}
-
-	function update(t) {
-	  objs.forEach(function (item) {
-	    return item.update(t);
-	  });
-	}
-
-	function recycle() {
-	  objs.forEach(function (item) {
-	    if (item.isDead) {
-	      objs.splice(objs.indexOf(item), 1);
-	    }
-	  });
-	}
-
-	start();
-
-/***/ },
-/* 1 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var rand = exports.rand = function rand(from, to) {
-	    return ~ ~(from + Math.random() * (to - from));
 	};
 
 /***/ }
