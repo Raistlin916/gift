@@ -1,9 +1,10 @@
 
 class Cycle {
     
-    constructor (canvas) {
+    constructor (canvas, input) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
+        this.input = input;
         this.objs = [];
     }
     
@@ -14,7 +15,7 @@ class Cycle {
             
             let elapse = (now - last)/1000;
             last = now;
-            this.update(elapse);
+            this.update(elapse, this.input);
             this.draw();
             window.requestAnimationFrame(round);
         };
@@ -26,8 +27,8 @@ class Cycle {
         this.objs.forEach(item => item.draw(this.ctx));
     }
     
-    update (elapse) {
-        this.objs.forEach(item => item.update(elapse));
+    update (...args) {
+        this.objs.forEach(item => item.update(...args));
         this.recycle();
     }
     

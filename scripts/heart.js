@@ -1,9 +1,9 @@
+import BaseObj from './base_object';
 import {rand} from './utils';
 
-class Heart {
+class Heart extends BaseObj {
   constructor (option={}) {
-    this.pt = Object.assign({x:0, y:0}, {x: option.x, y: option.y}); 
-    this.speed = Object.assign({x: 0, y: 0}, {x: option.vx, y: option.vy});
+    super(option);
     this.color = option.color || 'red';
     this.opacity = option.opacity || 1;
   }
@@ -17,10 +17,10 @@ class Heart {
       return;
     }
 
-    this.pt.x += t * this.speed.x;
-    this.pt.y += t * this.speed.y;
+    this.pt.x += t * this.velocity.x;
+    this.pt.y += t * this.velocity.y;
     
-    this.speed.y += t * 600;
+    this.velocity.y += t * 600;
   }
   
   draw (ctx) {
@@ -34,9 +34,6 @@ class Heart {
     ctx.restore();
   }
   
-  destroy () {
-    this.isDead = true;
-  }
 }
 
 const colors = ['#029DAF', '#E5D599', '#FFC219', '#F07C19', '#E32551'];
