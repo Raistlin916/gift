@@ -1,5 +1,5 @@
 //import {createHeartsByHeart} from './heart';
-import {MysteryBlock} from './mystery_block';
+import {MysteryBlockCollection} from './mystery_block';
 import Cycle from './cycle';
 import Input from './input';
 
@@ -14,17 +14,23 @@ cycle.start();
 
 
 const objs = cycle.getObjs();
+const blocks = new MysteryBlockCollection();
 
-objs.push(new MysteryBlock({
-    x: 100,
-    y: 100,
-    w: 10,
-    h: 10,
-    color: 'rgb(255, 160, 32)'
-}));
+for (let i=0; i<10; i++) {
+    for (let j=0; j<10; j++) {
+        blocks.add({
+            x: 100 + i*12,
+            y: 100 + j*12,
+            w: 10,
+            h: 10,
+            color: 'rgb(255, 160, 32)'
+        });
+    }
+}
 
-canvas.onclick = e => {
-    let pt = {x: e.offsetX, y: e.offsetY};
-    objs.forEach( item => item.moveTo(pt));
-};
+
+
+objs.push(blocks);
+
+
 //canvas.onclick = e => createHeartsByHeart(cycle.getObjs(), e.offsetX, e.offsetY);

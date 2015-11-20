@@ -69,21 +69,22 @@
 	cycle.start();
 
 	var objs = cycle.getObjs();
+	var blocks = new _mystery_block.MysteryBlockCollection();
 
-	objs.push(new _mystery_block.MysteryBlock({
-	    x: 100,
-	    y: 100,
-	    w: 10,
-	    h: 10,
-	    color: 'rgb(255, 160, 32)'
-	}));
+	for (var i = 0; i < 10; i++) {
+	    for (var j = 0; j < 10; j++) {
+	        blocks.add({
+	            x: 100 + i * 12,
+	            y: 100 + j * 12,
+	            w: 10,
+	            h: 10,
+	            color: 'rgb(255, 160, 32)'
+	        });
+	    }
+	}
 
-	canvas.onclick = function (e) {
-	    var pt = { x: e.offsetX, y: e.offsetY };
-	    objs.forEach(function (item) {
-	        return item.moveTo(pt);
-	    });
-	};
+	objs.push(blocks);
+
 	//canvas.onclick = e => createHeartsByHeart(cycle.getObjs(), e.offsetX, e.offsetY);
 
 /***/ },
@@ -99,7 +100,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.MysteryBlock = exports.Block = undefined;
+	exports.MysteryBlockCollection = exports.MysteryBlock = exports.Block = undefined;
 
 	var _base_object = __webpack_require__(2);
 
@@ -138,7 +139,8 @@
 
 	            var mousePt = input.getPt();
 	            if (mousePt && this.isIn(mousePt)) {
-	                this.onMouseIn();
+	                if (this.moveToTarget) return;
+	                this.onMouseIn(this);
 	            }
 	        }
 	    }, {
@@ -178,7 +180,7 @@
 	        value: function moveTo(pt) {
 	            var target = _victor2.default.fromObject(pt);
 	            var dist = this.pt.distance(target);
-	            this.velocity = target.clone().subtract(this.pt).norm().multiply(new _victor2.default(dist, dist));
+	            this.velocity = target.clone().subtract(this.pt).norm().multiply(new _victor2.default(dist * 2, dist * 2));
 
 	            this.moveToTarget = target;
 	            this.moveToSide = this.pt.cross(target) > 0;
@@ -197,6 +199,7 @@
 	            (_get2 = _get(Object.getPrototypeOf(MysteryBlock.prototype), 'update', this)).call.apply(_get2, [this, t].concat(args));
 
 	            var whenAcross = function whenAcross() {
+	                _this3.pt = _this3.moveToTarget;
 	                _this3.moveToTarget = null;
 	                _this3.moveToSide = null;
 	                _this3.moveToSideLen = null;
@@ -219,16 +222,63 @@
 	                }
 	            }
 	        }
-	    }, {
-	        key: 'onMouseIn',
-	        value: function onMouseIn() {
-	            if (this.moveToTarget) return;
-	            this.moveTo(this.pt.clone().add(new _victor2.default(100, 100)));
-	        }
 	    }]);
 
 	    return MysteryBlock;
 	})(Block);
+
+	var MysteryBlockCollection = exports.MysteryBlockCollection = (function () {
+	    function MysteryBlockCollection() {
+	        _classCallCheck(this, MysteryBlockCollection);
+
+	        this.items = [];
+	    }
+
+	    _createClass(MysteryBlockCollection, [{
+	        key: 'add',
+	        value: function add(i) {
+	            i = new MysteryBlock(i);
+	            i.onMouseIn = this.onItemMouseIn.bind(this);
+	            this.items.push(i);
+	        }
+	    }, {
+	        key: 'update',
+	        value: function update() {
+	            for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+	                args[_key2] = arguments[_key2];
+	            }
+
+	            this.items.forEach(function (i) {
+	                return i.update.apply(i, args);
+	            });
+	        }
+	    }, {
+	        key: 'draw',
+	        value: function draw() {
+	            for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+	                args[_key3] = arguments[_key3];
+	            }
+
+	            this.items.forEach(function (i) {
+	                return i.draw.apply(i, args);
+	            });
+	        }
+	    }, {
+	        key: 'onItemMouseIn',
+	        value: function onItemMouseIn(item) {
+	            var index = this.items.indexOf(item);
+	            var correspondingIndex = this.items.length - index - 1;
+	            var correspondingItem = this.items[correspondingIndex];
+	            if (correspondingItem == item) {
+	                return;
+	            }
+	            item.moveTo(correspondingItem.pt);
+	            correspondingItem.moveTo(item.pt);
+	        }
+	    }]);
+
+	    return MysteryBlockCollection;
+	})();
 
 /***/ },
 /* 2 */

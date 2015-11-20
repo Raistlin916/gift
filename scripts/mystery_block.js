@@ -12,7 +12,8 @@ export class Block extends BaseObj {
         
         const mousePt = input.getPt();
         if (mousePt && this.isIn(mousePt)) {
-            this.onMouseIn();
+            if (this.moveToTarget) return;
+            this.onMouseIn(this);
         }
     }
     
@@ -41,7 +42,7 @@ export class MysteryBlock extends Block {
     moveTo (pt) {
         let target = Vector.fromObject(pt);
         let dist = this.pt.distance(target);
-        this.velocity = target.clone().subtract(this.pt).norm().multiply(new Vector(dist, dist));
+        this.velocity = target.clone().subtract(this.pt).norm().multiply(new Vector(dist*2, dist*2));
         
         this.moveToTarget = target;
         this.moveToSide = this.pt.cross(target) > 0;
@@ -52,6 +53,7 @@ export class MysteryBlock extends Block {
         super.update(t, ...args);
         
         let whenAcross = () => {
+            this.pt = this.moveToTarget;
             this.moveToTarget = null;
             this.moveToSide = null;
             this.moveToSideLen = null;
@@ -78,8 +80,36 @@ export class MysteryBlock extends Block {
         
     }
     
-    onMouseIn () {
-        if (this.moveToTarget) return;
-        this.moveTo(this.pt.clone().add(new Vector(100, 100)));
+}
+
+
+export class MysteryBlockCollection {
+    constructor () {
+        this.items = [];
+    }
+    
+    add (i) {
+        i = new MysteryBlock(i);
+        i.onMouseIn = this.onItemMouseIn.bind(this);
+        this.items.push(i);
+    }
+    
+    update (...args) {
+        this.items.forEach( i => i.update(...args) );
+    }
+    
+    draw (...args) {
+        this.items.forEach( i => i.draw(...args) );
+    }
+    
+    onItemMouseIn (item) {
+        let index = this.items.indexOf(item);
+        let correspondingIndex = this.items.length - index - 1;
+        let correspondingItem = this.items[correspondingIndex];
+        if (correspondingItem == item) {
+            return;
+        }
+        item.moveTo(correspondingItem.pt);
+        correspondingItem.moveTo(item.pt);
     }
 }
