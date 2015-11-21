@@ -6,10 +6,20 @@ export default class MapGenerator extends Component {
     
     constructor () {
         super();
+        
         this.state = {
             columns: 10,
             rows: 10,
             checkList: new Set()
+        }
+    }
+    
+    componentDidMount () {
+        let data = localStorage.getItem('map_generator_data');
+        
+        if (data) {
+            data = JSON.parse(data);
+            this.loadData(data);
         }
     }
     
@@ -18,20 +28,54 @@ export default class MapGenerator extends Component {
         return (
             <div style={styles.generatorWrap}>
                 <div style={styles.head}>
-                    columns: <input type="text" onChange={this.changeSize.bind(this)} data-type="columns" value={this.state.columns} />
-                    rows: <input type="text" onChange={this.changeSize.bind(this)} data-type="rows" value={this.state.rows} />
+                    <div>columns: <input type="text" onChange={this.changeSize.bind(this)} data-type="columns" value={this.state.columns} /></div>
+                    <div>rows: <input type="text" onChange={this.changeSize.bind(this)} data-type="rows" value={this.state.rows} /></div>
                 </div>
                 <MapContent columns={this.state.columns} rows={this.state.rows} 
-                    onClickItem={this.onClickItem.bind(this)} checkList={this.state.checkList} />
+                    onSelectItem={this.onSelectItem.bind(this)} checkList={this.state.checkList} />
+                <div>
+                    <input type="text" ref="LOAD_INPUT"/>
+                    <button onClick={this.load.bind(this)}>load</button>
+                </div>
+                <div>
+                    <button onClick={this.clean.bind(this)}>clean</button>
+                </div>
                 <div>{result}</div>
             </div>
         )
     }
     
-    onClickItem (index, x, y) {
+    onSelectItem (index, x, y) {
         let checkList = this.state.checkList;
         checkList[checkList.has(index) ? 'delete' : 'add'](index);
-        this.setState(checkList);
+        this.setState(checkList, () => this.persistence());
+    }
+    
+    load () {
+        let loadString = this.refs.LOAD_INPUT.value;
+        this.refs.LOAD_INPUT.value = '';
+        let data = JSON.parse(loadString);
+        this.loadData(data);
+    }
+    
+    loadData (data) {
+        this.setState({
+            columns: data.w,
+            rows: data.h,
+            checkList: new Set(data.list)
+        });
+    }
+    
+    persistence () {
+        localStorage.setItem('map_generator_data', this.transToExportData());
+    }
+    
+    clean () {
+        this.setState({
+            checkList: new Set()
+        }, () => {
+            this.persistence(); 
+        });
     }
     
     changeSize (e) {
