@@ -2,7 +2,10 @@ var path = require('path');
 
 
 module.exports = {
-    entry: './scripts/main.js',
+    entry: {
+      game: './scripts/game/main.js',
+      map_generator: './scripts/map_generator/main.jsx'
+    },
     resolve: {
         extensions: ['', '.js', '.jsx']
     },
@@ -13,7 +16,15 @@ module.exports = {
     module: {
       loaders: [
         {
-          test: /\.jsx?$/,
+          test: /\.jsx/,
+          exclude: /(node_modules|bower_components)/,
+          loader: 'babel',
+          query: {
+            presets: ['es2015', 'react']
+          }
+        },
+        {
+          test: /\.js?$/,
           exclude: /(node_modules|bower_components)/,
           loader: 'babel',
           query: {
