@@ -5,7 +5,7 @@ class Cycle {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.input = input;
-        this.objs = [];
+        this.objs = new Set();
     }
     
     start () {
@@ -35,7 +35,7 @@ class Cycle {
     recycle () {
         this.objs.forEach( item => {
             if(item.isDead){
-                this.objs.splice(this.objs.indexOf(item), 1);
+                this.objs.delete(item);
             }
         });
     }
