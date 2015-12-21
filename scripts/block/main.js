@@ -3,11 +3,13 @@ import Input from '../base/input';
 import {MysteryBlockCollection} from './mystery_block';
 import defaultData from './data';
 
-const canvas = document.getElementsByTagName('canvas')[0];
+
+const container = document.querySelector('.canvas-container');
+const canvas = document.createElement('canvas');
+container.appendChild(canvas);
 const input = new Input(canvas);
 canvas.height = 500;
 canvas.width = 500;
-canvas.style.border = '1px solid #e5e5e5';
 
 const cycle = new Cycle(canvas, input);
 cycle.start();
@@ -25,20 +27,36 @@ function construct () {
     }
     
     blocks.reset();
-    
-    for (let i=0; i<data.h; i++) {
-        for (let j=0; j<data.w; j++) {
-            let index = i * data.w + j;
-            if (data.list.indexOf(index) == -1) {
-                continue;
+
+    if (data.data) {
+        for (let i=0; i<data.h; i++) {
+            for (let j=0; j<data.w; j++) {
+                let index = i * data.w + j;
+                let pixel = data.data[index];
+                blocks.add({
+                    x: 50 + j * 10,
+                    y: 50 + i * 10,
+                    w: 8,
+                    h: 8,
+                    color: `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`
+                });
             }
-            blocks.add({
-                x: 50 + j * 10,
-                y: 50 + i * 10,
-                w: 8,
-                h: 8,
-                color: 'rgb(255, 160, 32)'
-            });
+        }
+    } else {
+        for (let i=0; i<data.h; i++) {
+            for (let j=0; j<data.w; j++) {
+                let index = i * data.w + j;
+                if (data.list.indexOf(index) == -1) {
+                    continue;
+                }
+                blocks.add({
+                    x: 50 + j * 10,
+                    y: 50 + i * 10,
+                    w: 8,
+                    h: 8,
+                    color: 'rgb(255, 160, 32)'
+                });
+            }
         }
     }
     objs.add(blocks);
@@ -46,6 +64,3 @@ function construct () {
 
 construct();
 document.getElementById('load-btn').onclick = construct;
-
-
-//canvas.onclick = e => createHeartsByHeart(cycle.getObjs(), e.offsetX, e.offsetY);

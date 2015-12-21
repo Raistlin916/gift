@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import MapContent from './map_content';
+import MapReader from './map_reader';
 
 
 export default class MapGenerator extends Component {
@@ -10,7 +11,8 @@ export default class MapGenerator extends Component {
         this.state = {
             columns: 10,
             rows: 10,
-            checkList: new Set()
+            checkList: new Set(),
+            data: null
         }
     }
     
@@ -35,8 +37,10 @@ export default class MapGenerator extends Component {
                     <MapContent columns={this.state.columns} rows={this.state.rows} 
                     onMoveSelectItem={this.onMoveSelectItem.bind(this)}
                     onClickSelectItem={this.onClickSelectItem.bind(this)}
-                    checkList={this.state.checkList} />
+                    checkList={this.state.checkList}
+                    data={this.state.data} />
                 </div>
+                <MapReader export={this.onMapReaderExport.bind(this)}/>
                 <div>
                     <input type="text" ref="LOAD_INPUT"/>
                     <button onClick={this.load.bind(this)}>load</button>
@@ -55,6 +59,10 @@ export default class MapGenerator extends Component {
 
     onMouseDown () {
         this.start = true;
+    }
+
+    onMapReaderExport (data) {
+        this.loadData(data);
     }
 
     onMoveSelectItem (...args) {
@@ -78,10 +86,14 @@ export default class MapGenerator extends Component {
     }
     
     loadData (data) {
+        data = JSON.parse(JSON.stringify(data));
         this.setState({
             columns: data.w,
             rows: data.h,
-            checkList: new Set(data.list)
+            checkList: new Set(data.list),
+            data: data.data
+        }, () => {
+            this.persistence();
         });
     }
     
@@ -91,9 +103,10 @@ export default class MapGenerator extends Component {
     
     clean () {
         this.setState({
-            checkList: new Set()
+            checkList: new Set(),
+            data: []
         }, () => {
-            this.persistence(); 
+            this.persistence();
         });
     }
     
@@ -109,8 +122,12 @@ export default class MapGenerator extends Component {
         let data = {
             w: this.state.columns,
             h: this.state.rows,
-            list: list
+            list: list,
+            data: this.state.data
         };
+        if (data.data == undefined) {
+            delete data.data;
+        }
         data = JSON.stringify(data);
         return data;
     }

@@ -19677,6 +19677,10 @@
 
 	var _map_content2 = _interopRequireDefault(_map_content);
 
+	var _map_reader = __webpack_require__(169);
+
+	var _map_reader2 = _interopRequireDefault(_map_reader);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -19698,7 +19702,8 @@
 	        _this.state = {
 	            columns: 10,
 	            rows: 10,
-	            checkList: new Set()
+	            checkList: new Set(),
+	            data: null
 	        };
 	        return _this;
 	    }
@@ -19742,8 +19747,10 @@
 	                    _react2.default.createElement(_map_content2.default, { columns: this.state.columns, rows: this.state.rows,
 	                        onMoveSelectItem: this.onMoveSelectItem.bind(this),
 	                        onClickSelectItem: this.onClickSelectItem.bind(this),
-	                        checkList: this.state.checkList })
+	                        checkList: this.state.checkList,
+	                        data: this.state.data })
 	                ),
+	                _react2.default.createElement(_map_reader2.default, { 'export': this.onMapReaderExport.bind(this) }),
 	                _react2.default.createElement(
 	                    'div',
 	                    null,
@@ -19781,6 +19788,11 @@
 	            this.start = true;
 	        }
 	    }, {
+	        key: 'onMapReaderExport',
+	        value: function onMapReaderExport(data) {
+	            this.loadData(data);
+	        }
+	    }, {
 	        key: 'onMoveSelectItem',
 	        value: function onMoveSelectItem() {
 	            if (!this.start) {
@@ -19810,10 +19822,16 @@
 	    }, {
 	        key: 'loadData',
 	        value: function loadData(data) {
+	            var _this3 = this;
+
+	            data = JSON.parse(JSON.stringify(data));
 	            this.setState({
 	                columns: data.w,
 	                rows: data.h,
-	                checkList: new Set(data.list)
+	                checkList: new Set(data.list),
+	                data: data.data
+	            }, function () {
+	                _this3.persistence();
 	            });
 	        }
 	    }, {
@@ -19824,12 +19842,13 @@
 	    }, {
 	        key: 'clean',
 	        value: function clean() {
-	            var _this3 = this;
+	            var _this4 = this;
 
 	            this.setState({
-	                checkList: new Set()
+	                checkList: new Set(),
+	                data: []
 	            }, function () {
-	                _this3.persistence();
+	                _this4.persistence();
 	            });
 	        }
 	    }, {
@@ -19847,8 +19866,12 @@
 	            var data = {
 	                w: this.state.columns,
 	                h: this.state.rows,
-	                list: list
+	                list: list,
+	                data: this.state.data
 	            };
+	            if (data.data == undefined) {
+	                delete data.data;
+	            }
 	            data = JSON.stringify(data);
 	            return data;
 	        }
@@ -19900,7 +19923,14 @@
 	    _createClass(Block, [{
 	        key: 'render',
 	        value: function render() {
-	            var blockStyle = Object.assign({}, styles.emptyBlock, this.props.isChecked && styles.fullBlock);
+	            var blockStyle = {};
+	            var blockData = this.props.blockData;
+	            if (blockData) {
+	                blockStyle = {
+	                    backgroundColor: 'rgb(' + blockData[0] + ',' + blockData[1] + ',' + blockData[2] + ')'
+	                };
+	            }
+	            blockStyle = Object.assign({}, styles.block, this.props.isChecked && styles.fullBlock, blockStyle);
 	            return _react2.default.createElement('div', { style: blockStyle, onClick: this.props.onClickSelectItem,
 	                onMouseEnter: this.props.onMoveSelectItem
 	            });
@@ -19922,6 +19952,16 @@
 	    _createClass(MapContent, [{
 	        key: 'render',
 	        value: function render() {
+	            var blocks = this.props.data ? this.renderBlocksByData() : this.renderBlocksByCheckList();
+	            return _react2.default.createElement(
+	                'div',
+	                { style: styles.blocksWrap },
+	                blocks
+	            );
+	        }
+	    }, {
+	        key: 'renderBlocksByCheckList',
+	        value: function renderBlocksByCheckList() {
 	            var _this3 = this;
 
 	            var blocks = [];
@@ -19931,7 +19971,9 @@
 
 	                var _loop2 = function _loop2(j) {
 	                    var index = i * _this3.props.columns + j;
-	                    row.push(_react2.default.createElement(Block, { key: index, onClickSelectItem: function onClickSelectItem() {
+
+	                    row.push(_react2.default.createElement(Block, { key: index,
+	                        onClickSelectItem: function onClickSelectItem() {
 	                            return _this3.props.onClickSelectItem(index, j, i);
 	                        },
 	                        onMoveSelectItem: function onMoveSelectItem() {
@@ -19953,11 +19995,46 @@
 	            for (var i = 0; i < this.props.rows; i++) {
 	                _loop(i);
 	            }
-	            return _react2.default.createElement(
-	                'div',
-	                { style: styles.blocksWrap },
-	                blocks
-	            );
+	            return blocks;
+	        }
+	    }, {
+	        key: 'renderBlocksByData',
+	        value: function renderBlocksByData() {
+	            var _this4 = this;
+
+	            var data = this.props.data;
+	            var blocks = [];
+
+	            var _loop3 = function _loop3(i) {
+	                var row = [];
+
+	                var _loop4 = function _loop4(j) {
+	                    var index = i * _this4.props.columns + j;
+	                    var blockData = data[index];
+	                    row.push(_react2.default.createElement(Block, { key: index,
+	                        onClickSelectItem: function onClickSelectItem() {
+	                            return _this4.props.onClickSelectItem(index, j, i);
+	                        },
+	                        onMoveSelectItem: function onMoveSelectItem() {
+	                            return _this4.props.onMoveSelectItem(index, j, i);
+	                        },
+	                        blockData: blockData }));
+	                };
+
+	                for (var j = 0; j < _this4.props.columns; j++) {
+	                    _loop4(j);
+	                }
+	                blocks.push(_react2.default.createElement(
+	                    'div',
+	                    { key: 'row' + i },
+	                    row
+	                ));
+	            };
+
+	            for (var i = 0; i < this.props.rows; i++) {
+	                _loop3(i);
+	            }
+	            return blocks;
 	        }
 	    }]);
 
@@ -19971,7 +20048,7 @@
 	        fontSize: 0,
 	        margin: '20px'
 	    },
-	    emptyBlock: {
+	    block: {
 	        display: 'inline-block',
 	        width: '10px',
 	        height: '10px',
@@ -19982,6 +20059,190 @@
 	    },
 	    fullBlock: {
 	        backgroundColor: 'rgba(0,0,0,.5)'
+	    }
+	};
+
+/***/ },
+/* 169 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _react = __webpack_require__(155);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var MapReader = (function (_Component) {
+	    _inherits(MapReader, _Component);
+
+	    function MapReader(props) {
+	        _classCallCheck(this, MapReader);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MapReader).call(this, props));
+
+	        _this.state = {
+	            imageData: null,
+	            size: 20
+	        };
+	        return _this;
+	    }
+
+	    _createClass(MapReader, [{
+	        key: 'render',
+	        value: function render() {
+	            if (this.state.imageData) {
+	                this.serializeImage(this.state.imageData);
+	            }
+	            return _react2.default.createElement(
+	                'div',
+	                { style: styles.mapReaderWrap },
+	                _react2.default.createElement(
+	                    'div',
+	                    { style: styles.mapReader, onDrop: this.onDrop.bind(this),
+	                        onDragOver: this.onDragOver.bind(this) },
+	                    _react2.default.createElement('img', { src: this.state.imageData })
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(
+	                        'label',
+	                        null,
+	                        'reader size'
+	                    ),
+	                    _react2.default.createElement('input', { type: 'text', value: this.state.size, onChange: this.onSizeChange.bind(this) })
+	                )
+	            );
+	        }
+	    }, {
+	        key: 'onDrop',
+	        value: function onDrop(e) {
+	            e.stopPropagation();
+	            e.preventDefault();
+
+	            var dt = e.dataTransfer;
+	            var files = dt.files;
+
+	            this.handleFiles(files);
+	        }
+	    }, {
+	        key: 'onDragOver',
+	        value: function onDragOver(e) {
+	            e.stopPropagation();
+	            e.preventDefault();
+	        }
+	    }, {
+	        key: 'handleFiles',
+	        value: function handleFiles(files) {
+	            var _this2 = this;
+
+	            var file = files[0];
+	            var imageType = /^image\//;
+
+	            if (!imageType.test(file.type)) {
+	                return;
+	            }
+
+	            var reader = new FileReader();
+	            reader.onload = function (e) {
+	                var data = e.target.result;
+	                _this2.setState({
+	                    imageData: data
+	                });
+	            };
+	            reader.readAsDataURL(file);
+	        }
+	    }, {
+	        key: 'serializeImage',
+	        value: function serializeImage(data) {
+	            var _this3 = this;
+
+	            var canvas = document.createElement('canvas');
+	            var img = document.createElement('img');
+	            img.src = data;
+
+	            img.onload = function () {
+	                canvas.width = img.width;
+	                canvas.height = img.height;
+	                var ctx = canvas.getContext('2d');
+	                ctx.drawImage(img, 0, 0);
+	                _this3.props.export(_this3.rasterize(ctx));
+	            };
+	        }
+	    }, {
+	        key: 'onSizeChange',
+	        value: function onSizeChange(e) {
+	            this.setState({ size: e.target.value });
+	        }
+	    }, {
+	        key: 'rasterize',
+	        value: function rasterize(ctx) {
+	            var rowNum = this.state.size;
+	            var columnNum = this.state.size;
+	            var w = ctx.canvas.height / columnNum;
+	            var h = ctx.canvas.height / rowNum;
+	            var averageImageData = {
+	                data: [],
+	                w: rowNum,
+	                h: columnNum
+	            };
+
+	            for (var i = 0; i < rowNum; i++) {
+	                for (var j = 0; j < columnNum; j++) {
+	                    var data = ctx.getImageData(j * w, i * h, w, h);
+	                    averageImageData.data.push(this.getAverageImageData(data));
+	                }
+	            }
+
+	            return averageImageData;
+	        }
+	    }, {
+	        key: 'getAverageImageData',
+	        value: function getAverageImageData(imageData) {
+	            var w = imageData.width;
+	            var h = imageData.height;
+	            var length = imageData.data.length;
+	            var sum = [0, 0, 0];
+	            for (var i = 0; i < 3; i++) {
+	                for (var j = i; j < length; j += 4) {
+	                    sum[i] += imageData.data[j];
+	                }
+	            }
+	            return sum.map(function (i) {
+	                return ~ ~(i / length * 4);
+	            });
+	        }
+	    }]);
+
+	    return MapReader;
+	})(_react.Component);
+
+	exports.default = MapReader;
+
+	var styles = {
+	    mapReader: {
+	        display: 'inline-block',
+	        minWidth: '200px',
+	        minHeight: '200px',
+	        border: '1px solid #e5e5e5',
+	        margin: '10px'
+	    },
+	    mapReaderWrap: {
+	        margin: '20px'
 	    }
 	};
 
