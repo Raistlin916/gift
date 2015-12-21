@@ -28,11 +28,11 @@ function construct () {
     
     blocks.reset();
 
-    if (data.data) {
+    if (data.mapData) {
         for (let i=0; i<data.h; i++) {
             for (let j=0; j<data.w; j++) {
                 let index = i * data.w + j;
-                let pixel = data.data[index];
+                let pixel = data.mapData[index];
                 blocks.add({
                     x: 50 + j * 10,
                     y: 50 + i * 10,

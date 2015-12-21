@@ -14,8 +14,8 @@ class Block extends Component {
             this.props.isChecked && styles.fullBlock,
             blockStyle);
         return (
-            <div style={blockStyle} onClick={this.props.onClickSelectItem}
-                onMouseEnter={this.props.onMoveSelectItem}
+            <div style={blockStyle} onClick={this.props.onClickItem}
+                onMouseEnter={this.props.onEnterItem}
             ></div>
         )
     }
@@ -23,12 +23,33 @@ class Block extends Component {
 
 export default class MapContent extends Component {
     render () {
-        let blocks = this.props.data ? this.renderBlocksByData() : this.renderBlocksByCheckList();
+        let blocks = this.props.mapData ? this.renderBlocksByData() : this.renderBlocksByCheckList();
         return (
-            <div style={styles.blocksWrap}>
+            <div style={styles.blocksWrap} onMouseDown={this.onMouseDown.bind(this)}
+                onMouseUp={this.onMouseUp.bind(this)}>
                 {blocks}
             </div>
         )
+    }
+
+    onMouseDown () {
+        this.start = true;
+    }
+
+    onMouseUp () {
+        this.start = false;
+    }
+
+
+    onClickItem (...args) {
+        this.props.onSelectItem(...args);
+    }
+
+    onEnterItem (...args) {
+        if (!this.start) {
+            return;
+        }
+        this.props.onSelectItem(...args);
     }
 
     renderBlocksByCheckList () {
@@ -40,8 +61,8 @@ export default class MapContent extends Component {
 
                 row.push(
                     <Block key={index}
-                        onClickSelectItem={ ()=> this.props.onClickSelectItem(index, j, i) }
-                        onMoveSelectItem={ ()=> this.props.onMoveSelectItem(index, j, i) } 
+                        onEnterItem={ ()=> this.onEnterItem(index, j, i) }
+                        onClickItem={ ()=> this.onClickItem(index, j, i) }
                         isChecked={this.props.checkList.has(index)}/>
                 );
             }
@@ -53,17 +74,16 @@ export default class MapContent extends Component {
     }
 
     renderBlocksByData () {
-        let data = this.props.data;
+        let mapData = this.props.mapData;
         let blocks = [];
         for (let i=0; i<this.props.rows; i++) {
             let row = [];
             for (let j=0; j<this.props.columns; j++) {
                 let index = i*this.props.columns+j;
-                let blockData = data[index];
+                let blockData = mapData[index];
                 row.push(
                     <Block key={index}
-                        onClickSelectItem={ ()=> this.props.onClickSelectItem(index, j, i) }
-                        onMoveSelectItem={ ()=> this.props.onMoveSelectItem(index, j, i) } 
+                        onSelectItem={ ()=> this.onSelectItem(index, j, i) } 
                         blockData={blockData}/>
                 );
             }

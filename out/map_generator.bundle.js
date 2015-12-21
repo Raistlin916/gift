@@ -19703,7 +19703,7 @@
 	            columns: 10,
 	            rows: 10,
 	            checkList: new Set(),
-	            data: null
+	            mapData: null
 	        };
 	        return _this;
 	    }
@@ -19741,15 +19741,10 @@
 	                        _react2.default.createElement('input', { type: 'text', onChange: this.changeSize.bind(this), 'data-type': 'rows', value: this.state.rows })
 	                    )
 	                ),
-	                _react2.default.createElement(
-	                    'div',
-	                    { onMouseDown: this.onMouseDown.bind(this), onMouseUp: this.onMouseUp.bind(this) },
-	                    _react2.default.createElement(_map_content2.default, { columns: this.state.columns, rows: this.state.rows,
-	                        onMoveSelectItem: this.onMoveSelectItem.bind(this),
-	                        onClickSelectItem: this.onClickSelectItem.bind(this),
-	                        checkList: this.state.checkList,
-	                        data: this.state.data })
-	                ),
+	                _react2.default.createElement(_map_content2.default, { columns: this.state.columns, rows: this.state.rows,
+	                    onSelectItem: this.onSelectItem.bind(this),
+	                    checkList: this.state.checkList,
+	                    mapData: this.state.mapData }),
 	                _react2.default.createElement(_map_reader2.default, { 'export': this.onMapReaderExport.bind(this) }),
 	                _react2.default.createElement(
 	                    'div',
@@ -19757,7 +19752,7 @@
 	                    _react2.default.createElement('input', { type: 'text', ref: 'LOAD_INPUT' }),
 	                    _react2.default.createElement(
 	                        'button',
-	                        { onClick: this.load.bind(this) },
+	                        { onClick: this.loadFromInput.bind(this) },
 	                        'load'
 	                    )
 	                ),
@@ -19778,31 +19773,13 @@
 	            );
 	        }
 	    }, {
-	        key: 'onMouseUp',
-	        value: function onMouseUp() {
-	            this.start = false;
-	        }
-	    }, {
-	        key: 'onMouseDown',
-	        value: function onMouseDown() {
-	            this.start = true;
-	        }
-	    }, {
 	        key: 'onMapReaderExport',
 	        value: function onMapReaderExport(data) {
 	            this.loadData(data);
 	        }
 	    }, {
-	        key: 'onMoveSelectItem',
-	        value: function onMoveSelectItem() {
-	            if (!this.start) {
-	                return;
-	            }
-	            this.onClickSelectItem.apply(this, arguments);
-	        }
-	    }, {
-	        key: 'onClickSelectItem',
-	        value: function onClickSelectItem(index, x, y) {
+	        key: 'onSelectItem',
+	        value: function onSelectItem(index, x, y) {
 	            var _this2 = this;
 
 	            var checkList = this.state.checkList;
@@ -19812,8 +19789,8 @@
 	            });
 	        }
 	    }, {
-	        key: 'load',
-	        value: function load() {
+	        key: 'loadFromInput',
+	        value: function loadFromInput() {
 	            var loadString = this.refs.LOAD_INPUT.value;
 	            this.refs.LOAD_INPUT.value = '';
 	            var data = JSON.parse(loadString);
@@ -19829,7 +19806,7 @@
 	                columns: data.w,
 	                rows: data.h,
 	                checkList: new Set(data.list),
-	                data: data.data
+	                mapData: data.mapData
 	            }, function () {
 	                _this3.persistence();
 	            });
@@ -19846,7 +19823,7 @@
 
 	            this.setState({
 	                checkList: new Set(),
-	                data: []
+	                mapData: null
 	            }, function () {
 	                _this4.persistence();
 	            });
@@ -19867,10 +19844,10 @@
 	                w: this.state.columns,
 	                h: this.state.rows,
 	                list: list,
-	                data: this.state.data
+	                mapData: this.state.mapData
 	            };
-	            if (data.data == undefined) {
-	                delete data.data;
+	            if (data.mapData == undefined) {
+	                delete data.mapData;
 	            }
 	            data = JSON.stringify(data);
 	            return data;
@@ -19931,8 +19908,8 @@
 	                };
 	            }
 	            blockStyle = Object.assign({}, styles.block, this.props.isChecked && styles.fullBlock, blockStyle);
-	            return _react2.default.createElement('div', { style: blockStyle, onClick: this.props.onClickSelectItem,
-	                onMouseEnter: this.props.onMoveSelectItem
+	            return _react2.default.createElement('div', { style: blockStyle, onClick: this.props.onClickItem,
+	                onMouseEnter: this.props.onEnterItem
 	            });
 	        }
 	    }]);
@@ -19952,12 +19929,40 @@
 	    _createClass(MapContent, [{
 	        key: 'render',
 	        value: function render() {
-	            var blocks = this.props.data ? this.renderBlocksByData() : this.renderBlocksByCheckList();
+	            var blocks = this.props.mapData ? this.renderBlocksByData() : this.renderBlocksByCheckList();
 	            return _react2.default.createElement(
 	                'div',
-	                { style: styles.blocksWrap },
+	                { style: styles.blocksWrap, onMouseDown: this.onMouseDown.bind(this),
+	                    onMouseUp: this.onMouseUp.bind(this) },
 	                blocks
 	            );
+	        }
+	    }, {
+	        key: 'onMouseDown',
+	        value: function onMouseDown() {
+	            this.start = true;
+	        }
+	    }, {
+	        key: 'onMouseUp',
+	        value: function onMouseUp() {
+	            this.start = false;
+	        }
+	    }, {
+	        key: 'onClickItem',
+	        value: function onClickItem() {
+	            var _props;
+
+	            (_props = this.props).onSelectItem.apply(_props, arguments);
+	        }
+	    }, {
+	        key: 'onEnterItem',
+	        value: function onEnterItem() {
+	            var _props2;
+
+	            if (!this.start) {
+	                return;
+	            }
+	            (_props2 = this.props).onSelectItem.apply(_props2, arguments);
 	        }
 	    }, {
 	        key: 'renderBlocksByCheckList',
@@ -19973,11 +19978,11 @@
 	                    var index = i * _this3.props.columns + j;
 
 	                    row.push(_react2.default.createElement(Block, { key: index,
-	                        onClickSelectItem: function onClickSelectItem() {
-	                            return _this3.props.onClickSelectItem(index, j, i);
+	                        onEnterItem: function onEnterItem() {
+	                            return _this3.onEnterItem(index, j, i);
 	                        },
-	                        onMoveSelectItem: function onMoveSelectItem() {
-	                            return _this3.props.onMoveSelectItem(index, j, i);
+	                        onClickItem: function onClickItem() {
+	                            return _this3.onClickItem(index, j, i);
 	                        },
 	                        isChecked: _this3.props.checkList.has(index) }));
 	                };
@@ -20002,7 +20007,7 @@
 	        value: function renderBlocksByData() {
 	            var _this4 = this;
 
-	            var data = this.props.data;
+	            var mapData = this.props.mapData;
 	            var blocks = [];
 
 	            var _loop3 = function _loop3(i) {
@@ -20010,13 +20015,10 @@
 
 	                var _loop4 = function _loop4(j) {
 	                    var index = i * _this4.props.columns + j;
-	                    var blockData = data[index];
+	                    var blockData = mapData[index];
 	                    row.push(_react2.default.createElement(Block, { key: index,
-	                        onClickSelectItem: function onClickSelectItem() {
-	                            return _this4.props.onClickSelectItem(index, j, i);
-	                        },
-	                        onMoveSelectItem: function onMoveSelectItem() {
-	                            return _this4.props.onMoveSelectItem(index, j, i);
+	                        onSelectItem: function onSelectItem() {
+	                            return _this4.onSelectItem(index, j, i);
 	                        },
 	                        blockData: blockData }));
 	                };
@@ -20186,7 +20188,7 @@
 	    }, {
 	        key: 'onSizeChange',
 	        value: function onSizeChange(e) {
-	            this.setState({ size: e.target.value });
+	            this.setState({ size: Math.min(e.target.value, 50) });
 	        }
 	    }, {
 	        key: 'rasterize',
@@ -20196,7 +20198,7 @@
 	            var w = ctx.canvas.height / columnNum;
 	            var h = ctx.canvas.height / rowNum;
 	            var averageImageData = {
-	                data: [],
+	                mapData: [],
 	                w: rowNum,
 	                h: columnNum
 	            };
@@ -20204,7 +20206,7 @@
 	            for (var i = 0; i < rowNum; i++) {
 	                for (var j = 0; j < columnNum; j++) {
 	                    var data = ctx.getImageData(j * w, i * h, w, h);
-	                    averageImageData.data.push(this.getAverageImageData(data));
+	                    averageImageData.mapData.push(this.getAverageImageData(data));
 	                }
 	            }
 

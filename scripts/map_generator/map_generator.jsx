@@ -12,7 +12,7 @@ export default class MapGenerator extends Component {
             columns: 10,
             rows: 10,
             checkList: new Set(),
-            data: null
+            mapData: null
         }
     }
     
@@ -33,17 +33,14 @@ export default class MapGenerator extends Component {
                     <div>columns: <input type="text" onChange={this.changeSize.bind(this)} data-type="columns" value={this.state.columns} /></div>
                     <div>rows: <input type="text" onChange={this.changeSize.bind(this)} data-type="rows" value={this.state.rows} /></div>
                 </div>
-                <div onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)}>
-                    <MapContent columns={this.state.columns} rows={this.state.rows} 
-                    onMoveSelectItem={this.onMoveSelectItem.bind(this)}
-                    onClickSelectItem={this.onClickSelectItem.bind(this)}
+                <MapContent columns={this.state.columns} rows={this.state.rows} 
+                    onSelectItem={this.onSelectItem.bind(this)}
                     checkList={this.state.checkList}
-                    data={this.state.data} />
-                </div>
+                    mapData={this.state.mapData} />
                 <MapReader export={this.onMapReaderExport.bind(this)}/>
                 <div>
                     <input type="text" ref="LOAD_INPUT"/>
-                    <button onClick={this.load.bind(this)}>load</button>
+                    <button onClick={this.loadFromInput.bind(this)}>load</button>
                 </div>
                 <div>
                     <button onClick={this.clean.bind(this)}>clean</button>
@@ -53,32 +50,17 @@ export default class MapGenerator extends Component {
         )
     }
 
-    onMouseUp () {
-        this.start = false;
-    }
-
-    onMouseDown () {
-        this.start = true;
-    }
-
     onMapReaderExport (data) {
         this.loadData(data);
     }
 
-    onMoveSelectItem (...args) {
-        if (!this.start) {
-            return;
-        }
-        this.onClickSelectItem(...args);
-    }
-
-    onClickSelectItem (index, x, y) {
+    onSelectItem (index, x, y) {
         let checkList = this.state.checkList;
         checkList[checkList.has(index) ? 'delete' : 'add'](index);
         this.setState(checkList, () => this.persistence());
     }
     
-    load () {
+    loadFromInput () {
         let loadString = this.refs.LOAD_INPUT.value;
         this.refs.LOAD_INPUT.value = '';
         let data = JSON.parse(loadString);
@@ -91,7 +73,7 @@ export default class MapGenerator extends Component {
             columns: data.w,
             rows: data.h,
             checkList: new Set(data.list),
-            data: data.data
+            mapData: data.mapData
         }, () => {
             this.persistence();
         });
@@ -104,7 +86,7 @@ export default class MapGenerator extends Component {
     clean () {
         this.setState({
             checkList: new Set(),
-            data: []
+            mapData: null
         }, () => {
             this.persistence();
         });
@@ -123,10 +105,10 @@ export default class MapGenerator extends Component {
             w: this.state.columns,
             h: this.state.rows,
             list: list,
-            data: this.state.data
+            mapData: this.state.mapData
         };
-        if (data.data == undefined) {
-            delete data.data;
+        if (data.mapData == undefined) {
+            delete data.mapData;
         }
         data = JSON.stringify(data);
         return data;

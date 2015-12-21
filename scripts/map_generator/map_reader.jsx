@@ -74,7 +74,7 @@ export default class MapReader extends Component {
     }
 
     onSizeChange (e) {
-        this.setState({size: e.target.value});
+        this.setState({size: Math.min(e.target.value, 50)});
     }
 
     rasterize (ctx) {
@@ -83,7 +83,7 @@ export default class MapReader extends Component {
         let w = ctx.canvas.height/columnNum;
         let h = ctx.canvas.height/rowNum;
         let averageImageData = {
-            data: [],
+            mapData: [],
             w: rowNum,
             h: columnNum
         };
@@ -91,7 +91,7 @@ export default class MapReader extends Component {
         for (let i=0;i<rowNum;i++) {
             for (let j=0;j<columnNum;j++) {
                 let data = ctx.getImageData(j*w, i*h, w, h);
-                averageImageData.data.push(this.getAverageImageData(data));
+                averageImageData.mapData.push(this.getAverageImageData(data));
             }
         }
 
