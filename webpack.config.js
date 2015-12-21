@@ -3,7 +3,8 @@ var path = require('path');
 
 module.exports = {
     entry: {
-      game: './scripts/game/main.js',
+      block: './scripts/block/main.js',
+      heart: './scripts/heart/main.js',
       map_generator: './scripts/map_generator/main.jsx'
     },
     resolve: {

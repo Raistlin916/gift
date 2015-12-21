@@ -1,6 +1,6 @@
-import BaseObj from './base_object';
+import BaseObj from '../base/base_object';
+import {rand} from '../base/utils';
 import Vector from 'victor';
-import {rand} from './utils';
 
 export class Block extends BaseObj {
     constructor (option={}) {

@@ -1,6 +1,6 @@
+import Cycle from '../base/cycle';
+import Input from '../base/input';
 import {MysteryBlockCollection} from './mystery_block';
-import Cycle from './cycle';
-import Input from './input';
 import defaultData from './data';
 
 const canvas = document.getElementsByTagName('canvas')[0];

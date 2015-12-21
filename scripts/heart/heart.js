@@ -1,5 +1,5 @@
-import BaseObj from './base_object';
-import {rand} from './utils';
+import BaseObj from '../base/base_object';
+import {rand} from '../base/utils';
 
 class Heart extends BaseObj {
   constructor (option={}) {
@@ -83,7 +83,7 @@ export let createHearts = (objs, x, y) => {
       color: colors[rand(0, 5)],
       opacity: rand(6, 9)/10
     });   
-    objs.push(heart);
+    objs.add(heart);
   } 
 };
 
@@ -109,7 +109,7 @@ export let createHeartsByHeart = (objs, dx, dy) => {
           color: colors[rand(0, 5)],
           opacity: rand(6, 10)/10
         });
-        objs.push(heart);      
+        objs.add(heart);      
       }, n * 10);
     })(x, y);
     
