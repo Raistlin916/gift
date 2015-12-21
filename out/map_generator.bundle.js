@@ -19736,8 +19736,14 @@
 	                        _react2.default.createElement('input', { type: 'text', onChange: this.changeSize.bind(this), 'data-type': 'rows', value: this.state.rows })
 	                    )
 	                ),
-	                _react2.default.createElement(_map_content2.default, { columns: this.state.columns, rows: this.state.rows,
-	                    onSelectItem: this.onSelectItem.bind(this), checkList: this.state.checkList }),
+	                _react2.default.createElement(
+	                    'div',
+	                    { onMouseDown: this.onMouseDown.bind(this), onMouseUp: this.onMouseUp.bind(this) },
+	                    _react2.default.createElement(_map_content2.default, { columns: this.state.columns, rows: this.state.rows,
+	                        onMoveSelectItem: this.onMoveSelectItem.bind(this),
+	                        onClickSelectItem: this.onClickSelectItem.bind(this),
+	                        checkList: this.state.checkList })
+	                ),
 	                _react2.default.createElement(
 	                    'div',
 	                    null,
@@ -19765,8 +19771,26 @@
 	            );
 	        }
 	    }, {
-	        key: 'onSelectItem',
-	        value: function onSelectItem(index, x, y) {
+	        key: 'onMouseUp',
+	        value: function onMouseUp() {
+	            this.start = false;
+	        }
+	    }, {
+	        key: 'onMouseDown',
+	        value: function onMouseDown() {
+	            this.start = true;
+	        }
+	    }, {
+	        key: 'onMoveSelectItem',
+	        value: function onMoveSelectItem() {
+	            if (!this.start) {
+	                return;
+	            }
+	            this.onClickSelectItem.apply(this, arguments);
+	        }
+	    }, {
+	        key: 'onClickSelectItem',
+	        value: function onClickSelectItem(index, x, y) {
 	            var _this2 = this;
 
 	            var checkList = this.state.checkList;
@@ -19877,7 +19901,9 @@
 	        key: 'render',
 	        value: function render() {
 	            var blockStyle = Object.assign({}, styles.emptyBlock, this.props.isChecked && styles.fullBlock);
-	            return _react2.default.createElement('div', { style: blockStyle, onClick: this.props.onSelectItem });
+	            return _react2.default.createElement('div', { style: blockStyle, onClick: this.props.onClickSelectItem,
+	                onMouseEnter: this.props.onMoveSelectItem
+	            });
 	        }
 	    }]);
 
@@ -19905,8 +19931,11 @@
 
 	                var _loop2 = function _loop2(j) {
 	                    var index = i * _this3.props.columns + j;
-	                    row.push(_react2.default.createElement(Block, { key: index, onSelectItem: function onSelectItem() {
-	                            return _this3.props.onSelectItem(index, j, i);
+	                    row.push(_react2.default.createElement(Block, { key: index, onClickSelectItem: function onClickSelectItem() {
+	                            return _this3.props.onClickSelectItem(index, j, i);
+	                        },
+	                        onMoveSelectItem: function onMoveSelectItem() {
+	                            return _this3.props.onMoveSelectItem(index, j, i);
 	                        },
 	                        isChecked: _this3.props.checkList.has(index) }));
 	                };

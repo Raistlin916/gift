@@ -31,8 +31,12 @@ export default class MapGenerator extends Component {
                     <div>columns: <input type="text" onChange={this.changeSize.bind(this)} data-type="columns" value={this.state.columns} /></div>
                     <div>rows: <input type="text" onChange={this.changeSize.bind(this)} data-type="rows" value={this.state.rows} /></div>
                 </div>
-                <MapContent columns={this.state.columns} rows={this.state.rows} 
-                    onSelectItem={this.onSelectItem.bind(this)} checkList={this.state.checkList} />
+                <div onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)}>
+                    <MapContent columns={this.state.columns} rows={this.state.rows} 
+                    onMoveSelectItem={this.onMoveSelectItem.bind(this)}
+                    onClickSelectItem={this.onClickSelectItem.bind(this)}
+                    checkList={this.state.checkList} />
+                </div>
                 <div>
                     <input type="text" ref="LOAD_INPUT"/>
                     <button onClick={this.load.bind(this)}>load</button>
@@ -44,8 +48,23 @@ export default class MapGenerator extends Component {
             </div>
         )
     }
-    
-    onSelectItem (index, x, y) {
+
+    onMouseUp () {
+        this.start = false;
+    }
+
+    onMouseDown () {
+        this.start = true;
+    }
+
+    onMoveSelectItem (...args) {
+        if (!this.start) {
+            return;
+        }
+        this.onClickSelectItem(...args);
+    }
+
+    onClickSelectItem (index, x, y) {
         let checkList = this.state.checkList;
         checkList[checkList.has(index) ? 'delete' : 'add'](index);
         this.setState(checkList, () => this.persistence());

@@ -5,7 +5,9 @@ class Block extends Component {
     render () {
         let blockStyle = Object.assign({}, styles.emptyBlock, this.props.isChecked && styles.fullBlock);
         return (
-            <div style={blockStyle} onClick={this.props.onSelectItem}></div>
+            <div style={blockStyle} onClick={this.props.onClickSelectItem}
+                onMouseEnter={this.props.onMoveSelectItem}
+            ></div>
         )
     }
 }
@@ -18,7 +20,8 @@ export default class MapContent extends Component {
             for (let j=0; j<this.props.columns; j++) {
                 let index = i*this.props.columns+j;
                 row.push(
-                    <Block key={index} onSelectItem={ ()=> this.props.onSelectItem(index, j, i) } 
+                    <Block key={index} onClickSelectItem={ ()=> this.props.onClickSelectItem(index, j, i) }
+                        onMoveSelectItem={ ()=> this.props.onMoveSelectItem(index, j, i) } 
                         isChecked={this.props.checkList.has(index)}/>
                 );
             }
