@@ -16,14 +16,11 @@ cycle.start();
 const objs = cycle.getObjs();
 const blocks = new MysteryBlockCollection();
 
-
-
 function construct () {
     let data;
     try {
         data = JSON.parse(document.getElementById('input').value);
     } catch(e) {
-        console.log('error');
         data = defaultData;
     }
     
