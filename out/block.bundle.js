@@ -75,10 +75,10 @@
 	cycle.start();
 
 	var objs = cycle.getObjs();
-	//const blocks = new MysteryBlockCollection();
-	var blocks = new _gravity_block.GravityBlockCollection();
+	var MysteryBlocks = new _mystery_block.MysteryBlockCollection();
+	var GravityBlocks = new _gravity_block.GravityBlockCollection();
 
-	function construct() {
+	function construct(dx, dy, blocks) {
 	    var data = undefined;
 	    try {
 	        data = JSON.parse(document.getElementById('input').value);
@@ -94,8 +94,8 @@
 	                var index = i * data.w + j;
 	                var pixel = data.mapData[index];
 	                blocks.add({
-	                    x: 50 + j * 10,
-	                    y: 50 + i * 10,
+	                    x: dx + j * 10,
+	                    y: dy + i * 10,
 	                    w: 8,
 	                    h: 8,
 	                    color: 'rgb(' + pixel[0] + ', ' + pixel[1] + ', ' + pixel[2] + ')'
@@ -110,8 +110,8 @@
 	                    continue;
 	                }
 	                blocks.add({
-	                    x: 50 + j * 10,
-	                    y: 50 + i * 10,
+	                    x: dx + j * 10,
+	                    y: dy + i * 10,
 	                    w: 8,
 	                    h: 8,
 	                    color: 'rgb(255, 160, 32)'
@@ -122,8 +122,9 @@
 	    objs.add(blocks);
 	}
 
-	construct();
-	document.getElementById('load-btn').onclick = construct;
+	construct(0, 0, MysteryBlocks);
+	construct(300, 0, GravityBlocks);
+	//document.getElementById('load-btn').onclick = construct;
 
 /***/ },
 /* 1 */
@@ -1596,14 +1597,14 @@
 
 	'use strict';
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.MysteryBlockCollection = exports.MysteryBlock = undefined;
+	exports.MysteryBlockCollection = undefined;
 
 	var _block = __webpack_require__(5);
 
@@ -1621,68 +1622,19 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var MysteryBlock = exports.MysteryBlock = (function (_Block) {
+	var MysteryBlock = (function (_Block) {
 	    _inherits(MysteryBlock, _Block);
 
 	    function MysteryBlock() {
-	        var option = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
 	        _classCallCheck(this, MysteryBlock);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(MysteryBlock).call(this, option));
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(MysteryBlock).apply(this, arguments));
 	    }
 
 	    _createClass(MysteryBlock, [{
-	        key: 'moveTo',
-	        value: function moveTo(pt) {
-	            var target = _victor2.default.fromObject(pt);
-	            var dist = this.pt.distance(target);
-	            this.velocity = target.clone().subtract(this.pt).norm().multiply(new _victor2.default(dist * 4, dist * 4));
-
-	            this.moveToTarget = target;
-	            this.moveToSide = this.pt.cross(target) > 0;
-	            this.moveToSideLen = this.pt.length() > target.length();
-	        }
-	    }, {
-	        key: 'isMove',
-	        value: function isMove() {
-	            return !!this.moveToTarget;
-	        }
-	    }, {
-	        key: 'update',
-	        value: function update(t) {
-	            var _get2,
-	                _this2 = this;
-
-	            for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-	                args[_key - 1] = arguments[_key];
-	            }
-
-	            (_get2 = _get(Object.getPrototypeOf(MysteryBlock.prototype), 'update', this)).call.apply(_get2, [this, t].concat(args));
-
-	            var whenAcross = function whenAcross() {
-	                _this2.pt = _this2.moveToTarget;
-	                _this2.moveToTarget = null;
-	                _this2.moveToSide = null;
-	                _this2.moveToSideLen = null;
-	                _this2.velocity = new _victor2.default(0, 0);
-	            };
-
-	            if (this.isMove()) {
-	                var cross = this.pt.cross(this.moveToTarget);
-	                if (cross == 0) {
-	                    var moveToSideLen = this.pt.length() > this.moveToTarget.length();
-	                    if (moveToSideLen != this.moveToSideLen) {
-	                        whenAcross();
-	                        return;
-	                    }
-	                } else {
-	                    if (cross > 0 != this.moveToSide) {
-	                        whenAcross();
-	                        return;
-	                    }
-	                }
-	            }
+	        key: 'onTargetMovingEnd',
+	        value: function onTargetMovingEnd() {
+	            this.pt = this.originPt.clone();
 	        }
 	    }]);
 
@@ -1697,14 +1649,14 @@
 
 	        _classCallCheck(this, MysteryBlockCollection);
 
-	        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-	            args[_key2] = arguments[_key2];
+	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	            args[_key] = arguments[_key];
 	        }
 
-	        var _this3 = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(MysteryBlockCollection)).call.apply(_Object$getPrototypeO, [this].concat(args)));
+	        var _this2 = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(MysteryBlockCollection)).call.apply(_Object$getPrototypeO, [this].concat(args)));
 
-	        _this3.childClass = MysteryBlock;
-	        return _this3;
+	        _this2.childClass = MysteryBlock;
+	        return _this2;
 	    }
 
 	    _createClass(MysteryBlockCollection, [{
@@ -1721,7 +1673,7 @@
 	            if (correspondingItem == item) {
 	                return;
 	            }
-	            if (item.isMove() || correspondingItem.isMove()) {
+	            if (item.targetMoving || correspondingItem.targetMoving) {
 	                return;
 	            }
 	            item.moveTo(correspondingItem.pt);
@@ -1747,9 +1699,15 @@
 	});
 	exports.BlockCollection = exports.Block = undefined;
 
+	var _victor = __webpack_require__(3);
+
+	var _victor2 = _interopRequireDefault(_victor);
+
 	var _base_object = __webpack_require__(6);
 
 	var _base_object2 = _interopRequireDefault(_base_object);
+
+	var _utils = __webpack_require__(7);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1770,6 +1728,7 @@
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Block).call(this, option));
 
 	        _this.color = option.color;
+	        _this.originPt = _this.pt.clone();
 	        return _this;
 	    }
 
@@ -1781,6 +1740,21 @@
 	            var mousePt = input.getPt();
 	            if (mousePt && this.isIn(mousePt)) {
 	                this.onMouseIn(this);
+	            }
+
+	            if (this.targetMoving) {
+	                var a = this.previousPt.distance(this.target);
+	                var b = this.pt.distance(this.target);
+	                var c = this.pt.distance(this.previousPt);
+
+	                if (Math.abs(a + b - c) < _utils.PRECISION) {
+	                    this.acc = new _victor2.default(0, 0);
+	                    this.velocity = new _victor2.default(0, 0);
+	                    this.pt = this.target.clone();
+	                    this.targetMoving = false;
+	                    this.target = null;
+	                    this.onTargetMovingEnd();
+	                }
 	            }
 	        }
 	    }, {
@@ -1797,8 +1771,24 @@
 	            return this.pt.x <= targetPt.x && this.pt.x + this.size.w >= targetPt.x && this.pt.y <= targetPt.y && this.pt.y + this.size.h >= targetPt.y;
 	        }
 	    }, {
+	        key: 'moveTo',
+	        value: function moveTo(pt) {
+	            pt = pt.clone();
+	            if (this.targetMoving) {
+	                return;
+	            }
+	            this.targetMoving = true;
+	            this.target = pt;
+	            var target = _victor2.default.fromObject(pt);
+	            var dist = this.pt.distance(target);
+	            this.acc = target.clone().subtract(this.pt).norm().multiply(new _victor2.default(100, 100));
+	        }
+	    }, {
 	        key: 'onMouseIn',
 	        value: function onMouseIn() {}
+	    }, {
+	        key: 'onTargetMovingEnd',
+	        value: function onTargetMovingEnd() {}
 	    }]);
 
 	    return Block;
@@ -1882,12 +1872,15 @@
 
 	        this.pt = new _victor2.default(option.x, option.y);
 	        this.size = Object.assign({}, { w: option.w, h: option.h });
-	        this.velocity = new _victor2.default(option.vx, option.vy);
+	        this.velocity = new _victor2.default(option.vx || 0, option.vy || 0);
+	        this.acc = new _victor2.default(option.ax || 0, option.ay || 0);
 	    }
 
 	    _createClass(BaseObj, [{
 	        key: 'update',
 	        value: function update(t) {
+	            this.velocity.add(this.acc.clone().multiply(new _victor2.default(t, t)));
+	            this.previousPt = this.pt.clone();
 	            this.pt.add(this.velocity.clone().multiply(new _victor2.default(t, t)));
 	        }
 	    }, {
@@ -1918,6 +1911,8 @@
 	    return ~ ~(from + Math.random() * (to - from));
 	};
 
+	var PRECISION = exports.PRECISION = 0.01;
+
 /***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
@@ -1926,12 +1921,22 @@
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 	exports.GravityBlockCollection = exports.GravityBlock = undefined;
 
 	var _block = __webpack_require__(5);
+
+	var _victor = __webpack_require__(3);
+
+	var _victor2 = _interopRequireDefault(_victor);
+
+	var _utils = __webpack_require__(7);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1956,7 +1961,34 @@
 
 	    _createClass(GravityBlock, [{
 	        key: 'onMouseIn',
-	        value: function onMouseIn() {}
+	        value: function onMouseIn() {
+	            if (this.falling || this.targetMoving) {
+	                return;
+	            }
+	            this.falling = true;
+	            this.acc = new _victor2.default(0, 100);
+	            this.fallingTime = 0;
+	        }
+	    }, {
+	        key: 'update',
+	        value: function update(t) {
+	            var _get2;
+
+	            for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+	                args[_key2 - 1] = arguments[_key2];
+	            }
+
+	            (_get2 = _get(Object.getPrototypeOf(GravityBlock.prototype), 'update', this)).call.apply(_get2, [this, t].concat(args));
+
+	            if (this.falling) {
+	                this.fallingTime += t;
+
+	                if (this.fallingTime >= 1) {
+	                    this.falling = false;
+	                    this.moveTo(this.originPt);
+	                }
+	            }
+	        }
 	    }]);
 
 	    return GravityBlock;
@@ -1970,8 +2002,8 @@
 
 	        _classCallCheck(this, GravityBlockCollection);
 
-	        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-	            args[_key2] = arguments[_key2];
+	        for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+	            args[_key3] = arguments[_key3];
 	        }
 
 	        var _this2 = _possibleConstructorReturn(this, (_Object$getPrototypeO2 = Object.getPrototypeOf(GravityBlockCollection)).call.apply(_Object$getPrototypeO2, [this].concat(args)));

@@ -1566,12 +1566,15 @@
 
 	        this.pt = new _victor2.default(option.x, option.y);
 	        this.size = Object.assign({}, { w: option.w, h: option.h });
-	        this.velocity = new _victor2.default(option.vx, option.vy);
+	        this.velocity = new _victor2.default(option.vx || 0, option.vy || 0);
+	        this.acc = new _victor2.default(option.ax || 0, option.ay || 0);
 	    }
 
 	    _createClass(BaseObj, [{
 	        key: 'update',
 	        value: function update(t) {
+	            this.velocity.add(this.acc.clone().multiply(new _victor2.default(t, t)));
+	            this.previousPt = this.pt.clone();
 	            this.pt.add(this.velocity.clone().multiply(new _victor2.default(t, t)));
 	        }
 	    }, {
@@ -1601,6 +1604,8 @@
 	var rand = exports.rand = function rand(from, to) {
 	    return ~ ~(from + Math.random() * (to - from));
 	};
+
+	var PRECISION = exports.PRECISION = 0.01;
 
 /***/ },
 /* 8 */,

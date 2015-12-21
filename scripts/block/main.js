@@ -17,10 +17,10 @@ cycle.start();
 
 
 const objs = cycle.getObjs();
-//const blocks = new MysteryBlockCollection();
-const blocks = new GravityBlockCollection();
+const MysteryBlocks = new MysteryBlockCollection();
+const GravityBlocks = new GravityBlockCollection();
 
-function construct () {
+function construct (dx, dy, blocks) {
     let data;
     try {
         data = JSON.parse(document.getElementById('input').value);
@@ -36,8 +36,8 @@ function construct () {
                 let index = i * data.w + j;
                 let pixel = data.mapData[index];
                 blocks.add({
-                    x: 50 + j * 10,
-                    y: 50 + i * 10,
+                    x: dx + j * 10,
+                    y: dy + i * 10,
                     w: 8,
                     h: 8,
                     color: `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`
@@ -52,8 +52,8 @@ function construct () {
                     continue;
                 }
                 blocks.add({
-                    x: 50 + j * 10,
-                    y: 50 + i * 10,
+                    x: dx + j * 10,
+                    y: dy + i * 10,
                     w: 8,
                     h: 8,
                     color: 'rgb(255, 160, 32)'
@@ -64,5 +64,6 @@ function construct () {
     objs.add(blocks);
 }
 
-construct();
-document.getElementById('load-btn').onclick = construct;
+construct(0, 0, MysteryBlocks);
+construct(300, 0, GravityBlocks);
+//document.getElementById('load-btn').onclick = construct;

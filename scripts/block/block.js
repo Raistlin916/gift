@@ -1,9 +1,13 @@
+import Vector from 'victor';
 import BaseObj from '../base/base_object';
+import {PRECISION} from '../base/utils';
+
 
 export class Block extends BaseObj {
     constructor (option={}) {
         super(option);
         this.color = option.color;
+        this.originPt = this.pt.clone();
     }
     
     update (t, input) {
@@ -12,6 +16,21 @@ export class Block extends BaseObj {
         const mousePt = input.getPt();
         if (mousePt && this.isIn(mousePt)) {
             this.onMouseIn(this);
+        }
+
+        if (this.targetMoving) {
+            let a = this.previousPt.distance(this.target);
+            let b = this.pt.distance(this.target);
+            let c = this.pt.distance(this.previousPt);
+
+            if ( Math.abs(a+b-c) < PRECISION ) {
+                this.acc = new Vector(0, 0);
+                this.velocity = new Vector(0, 0);
+                this.pt = this.target.clone();
+                this.targetMoving = false;
+                this.target = null;
+                this.onTargetMovingEnd();
+            }
         }
     }
     
@@ -28,8 +47,21 @@ export class Block extends BaseObj {
             && this.pt.y <= targetPt.y
             && this.pt.y + this.size.h >= targetPt.y;
     }
+
+    moveTo (pt) {
+        pt = pt.clone();
+        if (this.targetMoving) {
+            return;
+        }
+        this.targetMoving = true;
+        this.target = pt;
+        let target = Vector.fromObject(pt);
+        let dist = this.pt.distance(target);
+        this.acc = target.clone().subtract(this.pt).norm().multiply(new Vector(100, 100));
+    }
     
     onMouseIn () {}
+    onTargetMovingEnd () {}
 }
 
 export class BlockCollection {
