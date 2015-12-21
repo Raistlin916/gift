@@ -13,7 +13,7 @@ export class Block extends BaseObj {
     update (t, input) {
         super.update(t, input);
         
-        const mousePt = input.getPt();
+        const mousePt = input.pt;
         if (mousePt && this.isIn(mousePt)) {
             this.onMouseIn(this);
         }

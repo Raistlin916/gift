@@ -240,20 +240,32 @@
 
 	        this.host = host;
 	        this.pt = null;
+	        this.pts = [];
+
 	        host.addEventListener('mousemove', function (e) {
 	            _this.pt = new _victor2.default(e.offsetX, e.offsetY);
+	            _this.pushPt(_this.pt);
+	            _this.calcuState();
 	        });
 
 	        host.addEventListener('mouseout', function () {
 	            _this.pt = null;
+	            _this.pts = [];
+	            _this.calcuState();
 	        });
 	    }
 
 	    _createClass(Input, [{
-	        key: 'getPt',
-	        value: function getPt() {
-	            return this.pt;
+	        key: 'pushPt',
+	        value: function pushPt(pt) {
+	            this.pts.push(pt);
+	            if (this.pts.length > 4) {
+	                this.pts.shift();
+	            }
 	        }
+	    }, {
+	        key: 'calcuState',
+	        value: function calcuState() {}
 	    }]);
 
 	    return Input;
@@ -1737,7 +1749,7 @@
 	        value: function update(t, input) {
 	            _get(Object.getPrototypeOf(Block.prototype), 'update', this).call(this, t, input);
 
-	            var mousePt = input.getPt();
+	            var mousePt = input.pt;
 	            if (mousePt && this.isIn(mousePt)) {
 	                this.onMouseIn(this);
 	            }
