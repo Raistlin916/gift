@@ -54,7 +54,7 @@
 
 	var _input2 = _interopRequireDefault(_input);
 
-	var _heart = __webpack_require__(8);
+	var _heart = __webpack_require__(10);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1538,7 +1538,8 @@
 
 /***/ },
 /* 4 */,
-/* 5 */
+/* 5 */,
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1589,7 +1590,7 @@
 	exports.default = BaseObj;
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1602,8 +1603,9 @@
 	};
 
 /***/ },
-/* 7 */,
-/* 8 */
+/* 8 */,
+/* 9 */,
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1615,11 +1617,11 @@
 	});
 	exports.createHeartsByHeart = exports.createHearts = undefined;
 
-	var _base_object = __webpack_require__(5);
+	var _base_object = __webpack_require__(6);
 
 	var _base_object2 = _interopRequireDefault(_base_object);
 
-	var _utils = __webpack_require__(6);
+	var _utils = __webpack_require__(7);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

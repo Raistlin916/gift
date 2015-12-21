@@ -56,7 +56,9 @@
 
 	var _mystery_block = __webpack_require__(4);
 
-	var _data = __webpack_require__(7);
+	var _gravity_block = __webpack_require__(8);
+
+	var _data = __webpack_require__(9);
 
 	var _data2 = _interopRequireDefault(_data);
 
@@ -73,7 +75,8 @@
 	cycle.start();
 
 	var objs = cycle.getObjs();
-	var blocks = new _mystery_block.MysteryBlockCollection();
+	//const blocks = new MysteryBlockCollection();
+	var blocks = new _gravity_block.GravityBlockCollection();
 
 	function construct() {
 	    var data = undefined;
@@ -1600,13 +1603,11 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.MysteryBlockCollection = exports.MysteryBlock = exports.Block = undefined;
+	exports.MysteryBlockCollection = exports.MysteryBlock = undefined;
 
-	var _base_object = __webpack_require__(5);
+	var _block = __webpack_require__(5);
 
-	var _base_object2 = _interopRequireDefault(_base_object);
-
-	var _utils = __webpack_require__(6);
+	var _utils = __webpack_require__(7);
 
 	var _victor = __webpack_require__(3);
 
@@ -1619,52 +1620,6 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Block = exports.Block = (function (_BaseObj) {
-	    _inherits(Block, _BaseObj);
-
-	    function Block() {
-	        var option = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-	        _classCallCheck(this, Block);
-
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Block).call(this, option));
-
-	        _this.color = option.color;
-	        return _this;
-	    }
-
-	    _createClass(Block, [{
-	        key: 'update',
-	        value: function update(t, input) {
-	            _get(Object.getPrototypeOf(Block.prototype), 'update', this).call(this, t, input);
-
-	            var mousePt = input.getPt();
-	            if (mousePt && this.isIn(mousePt)) {
-	                if (this.moveToTarget) return;
-	                this.onMouseIn(this);
-	            }
-	        }
-	    }, {
-	        key: 'draw',
-	        value: function draw(ctx) {
-	            ctx.save();
-	            ctx.fillStyle = this.color;
-	            ctx.fillRect(this.pt.x, this.pt.y, this.size.w, this.size.h);
-	            ctx.restore();
-	        }
-	    }, {
-	        key: 'isIn',
-	        value: function isIn(targetPt) {
-	            return this.pt.x <= targetPt.x && this.pt.x + this.size.w >= targetPt.x && this.pt.y <= targetPt.y && this.pt.y + this.size.h >= targetPt.y;
-	        }
-	    }, {
-	        key: 'onMouseIn',
-	        value: function onMouseIn() {}
-	    }]);
-
-	    return Block;
-	})(_base_object2.default);
 
 	var MysteryBlock = exports.MysteryBlock = (function (_Block) {
 	    _inherits(MysteryBlock, _Block);
@@ -1697,7 +1652,7 @@
 	        key: 'update',
 	        value: function update(t) {
 	            var _get2,
-	                _this3 = this;
+	                _this2 = this;
 
 	            for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
 	                args[_key - 1] = arguments[_key];
@@ -1706,11 +1661,11 @@
 	            (_get2 = _get(Object.getPrototypeOf(MysteryBlock.prototype), 'update', this)).call.apply(_get2, [this, t].concat(args));
 
 	            var whenAcross = function whenAcross() {
-	                _this3.pt = _this3.moveToTarget;
-	                _this3.moveToTarget = null;
-	                _this3.moveToSide = null;
-	                _this3.moveToSideLen = null;
-	                _this3.velocity = new _victor2.default(0, 0);
+	                _this2.pt = _this2.moveToTarget;
+	                _this2.moveToTarget = null;
+	                _this2.moveToSide = null;
+	                _this2.moveToSideLen = null;
+	                _this2.velocity = new _victor2.default(0, 0);
 	            };
 
 	            if (this.isMove()) {
@@ -1732,43 +1687,31 @@
 	    }]);
 
 	    return MysteryBlock;
-	})(Block);
+	})(_block.Block);
 
-	var MysteryBlockCollection = exports.MysteryBlockCollection = (function () {
+	var MysteryBlockCollection = exports.MysteryBlockCollection = (function (_BlockCollection) {
+	    _inherits(MysteryBlockCollection, _BlockCollection);
+
 	    function MysteryBlockCollection() {
+	        var _Object$getPrototypeO;
+
 	        _classCallCheck(this, MysteryBlockCollection);
 
-	        this.items = [];
+	        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+	            args[_key2] = arguments[_key2];
+	        }
+
+	        var _this3 = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(MysteryBlockCollection)).call.apply(_Object$getPrototypeO, [this].concat(args)));
+
+	        _this3.childClass = MysteryBlock;
+	        return _this3;
 	    }
 
 	    _createClass(MysteryBlockCollection, [{
 	        key: 'add',
-	        value: function add(i) {
-	            i = new MysteryBlock(i);
-	            i.onMouseIn = this.onItemMouseIn.bind(this);
-	            this.items.push(i);
-	        }
-	    }, {
-	        key: 'update',
-	        value: function update() {
-	            for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-	                args[_key2] = arguments[_key2];
-	            }
-
-	            this.items.forEach(function (i) {
-	                return i.update.apply(i, args);
-	            });
-	        }
-	    }, {
-	        key: 'draw',
-	        value: function draw() {
-	            for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-	                args[_key3] = arguments[_key3];
-	            }
-
-	            this.items.forEach(function (i) {
-	                return i.draw.apply(i, args);
-	            });
+	        value: function add(item) {
+	            item = _get(Object.getPrototypeOf(MysteryBlockCollection.prototype), 'add', this).call(this, item);
+	            item.onMouseIn = this.onItemMouseIn.bind(this);
 	        }
 	    }, {
 	        key: 'onItemMouseIn',
@@ -1784,18 +1727,135 @@
 	            item.moveTo(correspondingItem.pt);
 	            correspondingItem.moveTo(item.pt);
 	        }
+	    }]);
+
+	    return MysteryBlockCollection;
+	})(_block.BlockCollection);
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.BlockCollection = exports.Block = undefined;
+
+	var _base_object = __webpack_require__(6);
+
+	var _base_object2 = _interopRequireDefault(_base_object);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Block = exports.Block = (function (_BaseObj) {
+	    _inherits(Block, _BaseObj);
+
+	    function Block() {
+	        var option = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	        _classCallCheck(this, Block);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Block).call(this, option));
+
+	        _this.color = option.color;
+	        return _this;
+	    }
+
+	    _createClass(Block, [{
+	        key: 'update',
+	        value: function update(t, input) {
+	            _get(Object.getPrototypeOf(Block.prototype), 'update', this).call(this, t, input);
+
+	            var mousePt = input.getPt();
+	            if (mousePt && this.isIn(mousePt)) {
+	                this.onMouseIn(this);
+	            }
+	        }
+	    }, {
+	        key: 'draw',
+	        value: function draw(ctx) {
+	            ctx.save();
+	            ctx.fillStyle = this.color;
+	            ctx.fillRect(this.pt.x, this.pt.y, this.size.w, this.size.h);
+	            ctx.restore();
+	        }
+	    }, {
+	        key: 'isIn',
+	        value: function isIn(targetPt) {
+	            return this.pt.x <= targetPt.x && this.pt.x + this.size.w >= targetPt.x && this.pt.y <= targetPt.y && this.pt.y + this.size.h >= targetPt.y;
+	        }
+	    }, {
+	        key: 'onMouseIn',
+	        value: function onMouseIn() {}
+	    }]);
+
+	    return Block;
+	})(_base_object2.default);
+
+	var BlockCollection = exports.BlockCollection = (function () {
+	    function BlockCollection(childClass) {
+	        _classCallCheck(this, BlockCollection);
+
+	        this.childClass = childClass;
+	        this.items = [];
+	    }
+
+	    _createClass(BlockCollection, [{
+	        key: 'add',
+	        value: function add(item) {
+	            item = new this.childClass(item);
+	            this.items.push(item);
+	            return item;
+	        }
+	    }, {
+	        key: 'update',
+	        value: function update() {
+	            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	                args[_key] = arguments[_key];
+	            }
+
+	            this.items.forEach(function (i) {
+	                return i.update.apply(i, args);
+	            });
+	        }
+	    }, {
+	        key: 'draw',
+	        value: function draw() {
+	            for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+	                args[_key2] = arguments[_key2];
+	            }
+
+	            this.items.forEach(function (i) {
+	                return i.draw.apply(i, args);
+	            });
+	        }
 	    }, {
 	        key: 'reset',
 	        value: function reset() {
 	            this.items.length = 0;
 	        }
+	    }, {
+	        key: 'onItemMouseIn',
+	        value: function onItemMouseIn() {}
 	    }]);
 
-	    return MysteryBlockCollection;
+	    return BlockCollection;
 	})();
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1846,7 +1906,7 @@
 	exports.default = BaseObj;
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1859,7 +1919,72 @@
 	};
 
 /***/ },
-/* 7 */
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.GravityBlockCollection = exports.GravityBlock = undefined;
+
+	var _block = __webpack_require__(5);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var GravityBlock = exports.GravityBlock = (function (_Block) {
+	    _inherits(GravityBlock, _Block);
+
+	    function GravityBlock() {
+	        var _Object$getPrototypeO;
+
+	        _classCallCheck(this, GravityBlock);
+
+	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	            args[_key] = arguments[_key];
+	        }
+
+	        return _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(GravityBlock)).call.apply(_Object$getPrototypeO, [this].concat(args)));
+	    }
+
+	    _createClass(GravityBlock, [{
+	        key: 'onMouseIn',
+	        value: function onMouseIn() {}
+	    }]);
+
+	    return GravityBlock;
+	})(_block.Block);
+
+	var GravityBlockCollection = exports.GravityBlockCollection = (function (_BlockCollection) {
+	    _inherits(GravityBlockCollection, _BlockCollection);
+
+	    function GravityBlockCollection() {
+	        var _Object$getPrototypeO2;
+
+	        _classCallCheck(this, GravityBlockCollection);
+
+	        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+	            args[_key2] = arguments[_key2];
+	        }
+
+	        var _this2 = _possibleConstructorReturn(this, (_Object$getPrototypeO2 = Object.getPrototypeOf(GravityBlockCollection)).call.apply(_Object$getPrototypeO2, [this].concat(args)));
+
+	        _this2.childClass = GravityBlock;
+	        return _this2;
+	    }
+
+	    return GravityBlockCollection;
+	})(_block.BlockCollection);
+
+/***/ },
+/* 9 */
 /***/ function(module, exports) {
 
 	"use strict";

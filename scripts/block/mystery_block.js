@@ -1,39 +1,6 @@
-import BaseObj from '../base/base_object';
+import {Block, BlockCollection} from './block';
 import {rand} from '../base/utils';
 import Vector from 'victor';
-
-export class Block extends BaseObj {
-    constructor (option={}) {
-        super(option);
-        this.color = option.color;
-    }
-    
-    update (t, input) {
-        super.update(t, input);
-        
-        const mousePt = input.getPt();
-        if (mousePt && this.isIn(mousePt)) {
-            if (this.moveToTarget) return;
-            this.onMouseIn(this);
-        }
-    }
-    
-    draw (ctx) {
-        ctx.save();
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.pt.x, this.pt.y, this.size.w, this.size.h);
-        ctx.restore();
-    }
-    
-    isIn (targetPt) {
-        return this.pt.x <= targetPt.x
-            && this.pt.x + this.size.w >= targetPt.x
-            && this.pt.y <= targetPt.y
-            && this.pt.y + this.size.h >= targetPt.y;
-    }
-    
-    onMouseIn () {}
-}
 
 export class MysteryBlock extends Block {
     constructor (option={}) {
@@ -79,34 +46,23 @@ export class MysteryBlock extends Block {
                     return;
                 }
             }
-            
         }
-        
-        
     }
-    
 }
 
 
-export class MysteryBlockCollection {
-    constructor () {
-        this.items = [];
+export class MysteryBlockCollection extends BlockCollection {
+
+    constructor (...args) {
+        super(...args);
+        this.childClass = MysteryBlock;
     }
-    
-    add (i) {
-        i = new MysteryBlock(i);
-        i.onMouseIn = this.onItemMouseIn.bind(this);
-        this.items.push(i);
+
+    add (item) {
+        item = super.add(item);
+        item.onMouseIn = this.onItemMouseIn.bind(this);
     }
-    
-    update (...args) {
-        this.items.forEach( i => i.update(...args) );
-    }
-    
-    draw (...args) {
-        this.items.forEach( i => i.draw(...args) );
-    }
-    
+
     onItemMouseIn (item) {
         let correspondingIndex = rand(0, this.items.length);
         let correspondingItem = this.items[correspondingIndex];
@@ -118,9 +74,5 @@ export class MysteryBlockCollection {
         }
         item.moveTo(correspondingItem.pt);
         correspondingItem.moveTo(item.pt);
-    }
-    
-    reset () {
-        this.items.length = 0;
     }
 }

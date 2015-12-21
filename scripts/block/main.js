@@ -1,6 +1,7 @@
 import Cycle from '../base/cycle';
 import Input from '../base/input';
 import {MysteryBlockCollection} from './mystery_block';
+import {GravityBlockCollection} from './gravity_block';
 import defaultData from './data';
 
 
@@ -16,7 +17,8 @@ cycle.start();
 
 
 const objs = cycle.getObjs();
-const blocks = new MysteryBlockCollection();
+//const blocks = new MysteryBlockCollection();
+const blocks = new GravityBlockCollection();
 
 function construct () {
     let data;
