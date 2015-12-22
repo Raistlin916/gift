@@ -35,10 +35,10 @@ function construct (dx, dy, blocks) {
                 let index = i * data.w + j;
                 let pixel = data.mapData[index];
                 blocks.add({
-                    x: dx + j * 10,
-                    y: dy + i * 10,
-                    w: 8,
-                    h: 8,
+                    x: dx + j * 6,
+                    y: dy + i * 6,
+                    w: 5,
+                    h: 5,
                     color: `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`
                 });
             }
@@ -51,10 +51,10 @@ function construct (dx, dy, blocks) {
                     continue;
                 }
                 blocks.add({
-                    x: dx + j * 10,
-                    y: dy + i * 10,
-                    w: 8,
-                    h: 8,
+                    x: dx + j * 6,
+                    y: dy + i * 6,
+                    w: 5,
+                    h: 5,
                     color: 'rgb(255, 160, 32)'
                 });
             }
@@ -63,6 +63,6 @@ function construct (dx, dy, blocks) {
     objs.add(blocks);
 }
 
-construct(0, 0, MysteryBlocks);
-construct(300, 0, GravityBlocks);
+//construct(0, 0, MysteryBlocks);
+construct(100, 50, GravityBlocks);
 //document.getElementById('load-btn').onclick = construct;
