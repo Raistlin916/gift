@@ -8,12 +8,12 @@ export class GravityBlock extends Block {
         super(...args);
     }
 
-    onMouseIn () {
-        if (this.falling || this.targetMoving) {
+    onMouseIn (item, input) {
+        if (this.falling || this.targetMoving || !input.avg) {
             return;
         }
         this.falling = true;
-        this.acc = new Vector(0, 100);
+        this.acc = input.avg.clone().normalize().multiply(new Vector(200, 200));
         this.fallingTime = 0;
     }
 

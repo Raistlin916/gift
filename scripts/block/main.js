@@ -4,7 +4,6 @@ import {MysteryBlockCollection} from './mystery_block';
 import {GravityBlockCollection} from './gravity_block';
 import defaultData from './data';
 
-
 const container = document.querySelector('.canvas-container');
 const canvas = document.createElement('canvas');
 container.appendChild(canvas);

@@ -27,7 +27,20 @@ class Input {
     }
 
     calcuState () {
-        
+        let l = this.pts.length;
+        let segs = [];
+        this.pts.forEach((item, i, arr) => {
+            if (!arr[i+1]) {
+                return;
+            }
+            segs.push(arr[i+1].clone().subtract(item));
+        });
+        let avg = segs.length > 1 ? segs.reduce(function (t, i) {
+                return t.clone().add(i);
+            }, new Vector(0, 0))
+            .divide(new Vector(l, l))
+            .normalize() : null;
+        this.avg = avg;
     }
 }
 

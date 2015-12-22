@@ -210,7 +210,20 @@
 	        }
 	    }, {
 	        key: 'calcuState',
-	        value: function calcuState() {}
+	        value: function calcuState() {
+	            var l = this.pts.length;
+	            var segs = [];
+	            this.pts.forEach(function (item, i, arr) {
+	                if (!arr[i + 1]) {
+	                    return;
+	                }
+	                segs.push(arr[i + 1].clone().subtract(item));
+	            });
+	            var avg = segs.length > 1 ? segs.reduce(function (t, i) {
+	                return t.clone().add(i);
+	            }, new _victor2.default(0, 0)).divide(new _victor2.default(l, l)).normalize() : null;
+	            this.avg = avg;
+	        }
 	    }]);
 
 	    return Input;

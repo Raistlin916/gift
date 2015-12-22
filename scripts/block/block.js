@@ -15,7 +15,7 @@ export class Block extends BaseObj {
         
         const mousePt = input.pt;
         if (mousePt && this.isIn(mousePt)) {
-            this.onMouseIn(this);
+            this.onMouseIn(this, input);
         }
 
         if (this.targetMoving) {

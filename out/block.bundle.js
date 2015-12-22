@@ -265,7 +265,20 @@
 	        }
 	    }, {
 	        key: 'calcuState',
-	        value: function calcuState() {}
+	        value: function calcuState() {
+	            var l = this.pts.length;
+	            var segs = [];
+	            this.pts.forEach(function (item, i, arr) {
+	                if (!arr[i + 1]) {
+	                    return;
+	                }
+	                segs.push(arr[i + 1].clone().subtract(item));
+	            });
+	            var avg = segs.length > 1 ? segs.reduce(function (t, i) {
+	                return t.clone().add(i);
+	            }, new _victor2.default(0, 0)).divide(new _victor2.default(l, l)).normalize() : null;
+	            this.avg = avg;
+	        }
 	    }]);
 
 	    return Input;
@@ -1751,7 +1764,7 @@
 
 	            var mousePt = input.pt;
 	            if (mousePt && this.isIn(mousePt)) {
-	                this.onMouseIn(this);
+	                this.onMouseIn(this, input);
 	            }
 
 	            if (this.targetMoving) {
@@ -1973,12 +1986,12 @@
 
 	    _createClass(GravityBlock, [{
 	        key: 'onMouseIn',
-	        value: function onMouseIn() {
-	            if (this.falling || this.targetMoving) {
+	        value: function onMouseIn(item, input) {
+	            if (this.falling || this.targetMoving || !input.avg) {
 	                return;
 	            }
 	            this.falling = true;
-	            this.acc = new _victor2.default(0, 100);
+	            this.acc = input.avg.clone().normalize().multiply(new _victor2.default(200, 200));
 	            this.fallingTime = 0;
 	        }
 	    }, {
