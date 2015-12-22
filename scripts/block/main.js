@@ -1,68 +1,64 @@
 import Cycle from '../base/cycle';
 import Input from '../base/input';
-import {MysteryBlockCollection} from './mystery_block';
 import {GravityBlockCollection} from './gravity_block';
-import defaultData from './data';
+import {MysteryBlockCollection} from './mystery_block';
 
 const container = document.querySelector('.canvas-container');
 const canvas = document.createElement('canvas');
 container.appendChild(canvas);
 const input = new Input(canvas);
-canvas.height = 500;
-canvas.width = 500;
+canvas.height = 1000;
+canvas.width = 1000;
 
 const cycle = new Cycle(canvas, input);
 cycle.start();
 
 
 const objs = cycle.getObjs();
-const MysteryBlocks = new MysteryBlockCollection();
-const GravityBlocks = new GravityBlockCollection();
+const blocks = new GravityBlockCollection();
 
-function construct (dx, dy, blocks) {
-    let data;
-    try {
-        data = JSON.parse(document.getElementById('input').value);
-    } catch(e) {
-        data = defaultData;
-    }
-    
-    blocks.reset();
 
-    if (data.mapData) {
-        for (let i=0; i<data.h; i++) {
-            for (let j=0; j<data.w; j++) {
-                let index = i * data.w + j;
-                let pixel = data.mapData[index];
-                blocks.add({
-                    x: dx + j * 6,
-                    y: dy + i * 6,
-                    w: 5,
-                    h: 5,
-                    color: `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`
-                });
-            }
+function createImageDataReader(img) {
+    let canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    let ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+
+    return function (x, y, w, h) {
+        if (x > img.width || y > img.height) {
+            return null;
         }
-    } else {
-        for (let i=0; i<data.h; i++) {
-            for (let j=0; j<data.w; j++) {
-                let index = i * data.w + j;
-                if (data.list.indexOf(index) == -1) {
-                    continue;
-                }
-                blocks.add({
-                    x: dx + j * 6,
-                    y: dy + i * 6,
-                    w: 5,
-                    h: 5,
-                    color: 'rgb(255, 160, 32)'
-                });
+        return ctx.getImageData(x, y, w, h);
+    }
+}
+
+function construct (dx, dy, blocks, img, size) {
+    blocks.reset();
+    let reader = createImageDataReader(img);
+
+    for (let i=0; i<size; i++) {
+        for (let j=0; j<size; j++) {
+            let w = 20;
+            let h = 20;
+            let imgData = reader(j * w, i * h, w, h);
+            if (imgData == null) {
+                continue;
             }
+
+            blocks.add({
+                x: dx + j * (w),
+                y: dy + i * (h),
+                w: w,
+                h: h,
+                imgData: imgData
+            });
         }
     }
     objs.add(blocks);
 }
-
-//construct(0, 0, MysteryBlocks);
-construct(100, 50, GravityBlocks);
-//document.getElementById('load-btn').onclick = construct;
+const img = new Image();
+img.onload = function () {
+    construct(100, 50, blocks, img, 20);
+}
+img.src = '../assets/merry_christmas.jpg';

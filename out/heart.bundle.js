@@ -54,7 +54,7 @@
 
 	var _input2 = _interopRequireDefault(_input);
 
-	var _heart = __webpack_require__(10);
+	var _heart = __webpack_require__(9);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1634,8 +1634,7 @@
 
 /***/ },
 /* 8 */,
-/* 9 */,
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

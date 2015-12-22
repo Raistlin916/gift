@@ -7,6 +7,7 @@ export class Block extends BaseObj {
     constructor (option={}) {
         super(option);
         this.color = option.color;
+        this.imgData = option.imgData;
         this.originPt = this.pt.clone();
     }
     
@@ -36,8 +37,13 @@ export class Block extends BaseObj {
     
     draw (ctx) {
         ctx.save();
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.pt.x, this.pt.y, this.size.w, this.size.h);
+        if (this.color) {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.pt.x, this.pt.y, this.size.w, this.size.h);
+        }
+        if (this.imgData) {
+            ctx.putImageData(this.imgData, this.pt.x, this.pt.y);
+        }
         ctx.restore();
     }
     
