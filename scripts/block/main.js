@@ -2,6 +2,7 @@ import Cycle from '../base/cycle';
 import Input from '../base/input';
 import {GravityBlockCollection} from './gravity_block';
 import {MysteryBlockCollection} from './mystery_block';
+import {imgBase64} from './data';
 
 const container = document.querySelector('.canvas-container');
 const canvas = document.createElement('canvas');
@@ -61,4 +62,4 @@ const img = new Image();
 img.onload = function () {
     construct(100, 50, blocks, img, 20);
 }
-img.src = '../assets/merry_christmas.jpg';
+img.src = imgBase64;
