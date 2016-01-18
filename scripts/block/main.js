@@ -86,6 +86,6 @@ function constructText (dx, dy, blocks, data) {
     objs.add(blocks);
 }
 
-constructText(0, 150, textBlocks, textData);
+//constructText(0, 150, textBlocks, textData);
 
 canvas.onclick = e => createHeartsByHeart(cycle.getObjs(), e.offsetX, e.offsetY);
