@@ -143,7 +143,7 @@
 	    objs.add(blocks);
 	}
 
-	constructText(0, 150, textBlocks, _data.textData);
+	//constructText(0, 150, textBlocks, textData);
 
 	canvas.onclick = function (e) {
 	    return (0, _heart.createHeartsByHeart)(cycle.getObjs(), e.offsetX, e.offsetY);
